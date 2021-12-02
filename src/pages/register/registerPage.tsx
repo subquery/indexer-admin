@@ -15,6 +15,7 @@ import { useIsApproveChanged, useIsIndexerChanged } from '../../hooks/indexerHoo
 import { ADD_INDEXER } from '../../utils/queries';
 import { getStepIndex, getStepStatus, registerSteps } from './utils';
 import { useInitialStep } from '../../hooks/registerHook';
+import RegisterForm, { Metadata } from './registerForm';
 
 const RegisterPage = () => {
   const { account } = useWeb3();
@@ -67,8 +68,8 @@ const RegisterPage = () => {
       indexerRequestApprove(sdk, signer, '1000000000')
         .then(sendRequestApproveTx)
         .catch(onTransactionFailed),
-    [RegisterStep.register]: () =>
-      indexerRegistry(sdk, signer, '10000').then(sendRegisterIndexerTx).catch(onTransactionFailed),
+    [RegisterStep.register]: (metadata: Metadata) =>
+      indexerRegistry(sdk, signer, metadata).then(sendRegisterIndexerTx).catch(onTransactionFailed),
     [RegisterStep.sync]: syncIndexer,
   };
 
@@ -84,11 +85,20 @@ const RegisterPage = () => {
     );
   };
 
+  const renderView = (step: RegisterStep) => {
+    switch (step) {
+      case RegisterStep.register:
+        return <RegisterForm onClick={registerActions[RegisterStep.register]} loading={loading} />;
+      default:
+        return <RegisterView step={step} loading={loading} onClick={registerActions[step]} />;
+    }
+  };
+
   // TODO: as register step has forms, need to handle seperately
   return (
     <Container>
       {renderSteps()}
-      <RegisterView step={currentStep} loading={loading} onClick={registerActions[currentStep]} />
+      {renderView(currentStep)}
     </Container>
   );
 };

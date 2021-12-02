@@ -3,6 +3,8 @@
 
 import { Signer } from '../hooks/web3Hook';
 import { SDK } from '../containers/contractSdk';
+import { IPFS, cidToBytes32 } from './ipfs';
+import { Metadata } from '../pages/register/registerForm';
 
 export const emptyControllerAccount = '0x0000000000000000000000000000000000000000';
 
@@ -38,30 +40,27 @@ export const indexerRequestApprove = (
       .catch((error) => reject(error.message));
   });
 
-export const indexerRegistry = (
+export const indexerRegistry = async (
   sdk: SDK,
   signer: Signer,
-  amount: string | undefined
-): Promise<string> =>
-  new Promise((resolve, reject) => {
-    if (!sdk || !signer) {
-      reject(ErrorMessages.sdkOrSignerError);
-      return;
-    }
+  metadata: Metadata
+): Promise<void> => {
+  if (!sdk || !signer) {
+    throw ErrorMessages.sdkOrSignerError;
+  }
 
-    if (!amount) {
-      reject(ErrorMessages.amountError);
-      return;
-    }
+  const result = await IPFS.add(
+    JSON.stringify({
+      name: metadata.name,
+      url: metadata.url,
+    }),
+    { pin: true }
+  );
 
-    const metadata = '0xab3921276c8067fe0c82def3e5ecfd8447f1961bc85768c2a56e6bd26d3c0c55';
+  const metadataCid = cidToBytes32(result.cid.toV0().toString());
 
-    sdk.indexerRegistry
-      .connect(signer)
-      .registerIndexer(amount, metadata)
-      .then(() => resolve(''))
-      .catch((error) => reject(error.message));
-  });
+  await sdk.indexerRegistry.connect(signer).registerIndexer(metadata.amount, metadataCid);
+};
 
 export const unRegister = (sdk: SDK, signer: Signer) =>
   new Promise((resolve, reject) => {
