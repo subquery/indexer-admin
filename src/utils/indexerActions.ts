@@ -1,6 +1,8 @@
 // Copyright 2020-2021 OnFinality Limited authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { utils } from 'ethers';
+
 import { SDK } from 'containers/contractSdk';
 import { Signer } from 'hooks/web3Hook';
 
@@ -44,7 +46,7 @@ export async function indexerRegistry(
 
   const tx = await sdk.indexerRegistry
     .connect(signer)
-    .registerIndexer(amount, metadata, commissionRate);
+    .registerIndexer(utils.parseEther(amount), metadata, commissionRate);
   return tx;
 }
 
