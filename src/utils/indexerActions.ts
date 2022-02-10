@@ -26,7 +26,9 @@ export async function indexerRequestApprove(sdk: SDK, signer: Signer, amount: st
     throw new Error(ErrorMessages.amountError);
   }
 
-  const tx = await sdk.sqToken.connect(signer).increaseAllowance(sdk.staking.address, amount);
+  const tx = await sdk.sqToken
+    .connect(signer)
+    .increaseAllowance(sdk.staking.address, utils.parseEther(amount));
   return tx;
 }
 
