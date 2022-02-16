@@ -4,7 +4,6 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { intToHex } from 'ethereumjs-util';
 import { NetworkToChainID, chainNames, RPC_URLS } from 'utils/web3';
 import { connect } from 'containers/web3';
 
@@ -21,25 +20,12 @@ export async function connectWithMetaMask(activate: Function) {
 }
 
 function addNetwork(chainId: number) {
-  const nativeCurrency = {
-    name: 'DEV',
-    symbol: 'DEV',
-    decimals: 18,
-  };
-
   console.info('Add Ethereum network trye', chainId);
 
   ethereum
     .request({
       method: 'wallet_addEthereumChain',
-      params: [
-        {
-          chainId: intToHex(chainId),
-          chainName: chainNames[chainId],
-          rpcUrls: [RPC_URLS[chainId]],
-          nativeCurrency,
-        },
-      ],
+      params: [NETWORK_CONFIGS[chainId]],
     })
     .catch((e) => console.error('Add Ethereum network failed', e));
 }
