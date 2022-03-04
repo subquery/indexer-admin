@@ -10,6 +10,12 @@ export enum ChainID {
   mainnet = 1285,
 }
 
+export enum Networks {
+  local = 'local',
+  testnet = 'testnet',
+  mainnet = 'mainnet',
+}
+
 export const ChainIDs = [ChainID.local, ChainID.testnet, ChainID.mainnet];
 
 export const NetworkToChainID: Record<SubqueryNetwork, ChainID> = {
@@ -28,9 +34,9 @@ export const RPC_URLS: Record<number, string> = {
 };
 
 export const networks: Record<number, SubqueryNetwork> = {
-  1281: 'local',
-  1285: 'mainnet',
-  1280: 'testnet',
+  1281: Networks.local,
+  1280: Networks.testnet,
+  1285: Networks.mainnet,
 };
 
 export const chainNames: Record<number, string> = {

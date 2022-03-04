@@ -14,8 +14,9 @@ export const useIsApproved = () => {
   const sdk = useContractSDK();
 
   useEffect(() => {
-    if (!sdk || !account) return;
-    sdk.sqToken
+    if (!account) return;
+    console.log('sdk:', sdk);
+    sdk?.sqToken
       .allowance(account, sdk?.staking.address)
       .then((amount) => setIsApprove(!amount.eq(0)))
       .catch(() => setIsApprove(false));

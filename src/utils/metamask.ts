@@ -4,7 +4,8 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { NetworkToChainID, chainNames, RPC_URLS } from 'utils/web3';
+import { NetworkToChainID, NETWORK_CONFIGS } from 'utils/web3';
+import { intToHex } from 'ethereumjs-util';
 import { connect } from 'containers/web3';
 
 export const NetworkError = {
@@ -19,32 +20,24 @@ export async function connectWithMetaMask(activate: Function) {
   }
 }
 
-function addNetwork(chainId: number) {
-  console.info('Add Ethereum network trye', chainId);
-
-  ethereum
-    .request({
-      method: 'wallet_addEthereumChain',
-      params: [NETWORK_CONFIGS[chainId]],
-    })
-    .catch((e) => console.error('Add Ethereum network failed', e));
-}
-
 export async function switchNetwork() {
   const network = window.env.NETWORK;
-  if (!window?.ethereum || !network) return;
   const chainId = NetworkToChainID[network];
+  if (!window?.ethereum || !network) return;
 
-  window.ethereum
-    .request({
+  try {
+    await window.ethereum.request({
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: intToHex(chainId) }],
     })
-    .catch((e) => {
-      if (e.code === 4902) {
-        addNetwork(chainId);
-      } else {
-        console.error('Switch Ethereum network failed', e);
-      }
-    });
+  } catch (e) {
+    if (e.code === 4902) {
+      await ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [NETWORK_CONFIGS[chainId]],
+      })
+    } else {
+      console.log('Switch Ethereum network failed', e);
+    }
+  }
 }
