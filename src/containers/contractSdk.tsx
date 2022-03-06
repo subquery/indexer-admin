@@ -49,7 +49,6 @@ function useContractsImpl(logger: Logger): SDK {
     }
 
     if (library && isMetaMask) {
-      console.log('sdk options:', sdkOption);
       ContractSDK.create(library, sdkOption)
         .then((instance) => setSdk(instance))
         .catch((e) => {

@@ -15,7 +15,6 @@ export const useIsApproved = () => {
 
   useEffect(() => {
     if (!account) return;
-    console.log('sdk:', sdk);
     sdk?.sqToken
       .allowance(account, sdk?.staking.address)
       .then((amount) => setIsApprove(!amount.eq(0)))
