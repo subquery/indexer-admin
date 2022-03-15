@@ -133,7 +133,6 @@ const ProjectDetailsHeader: FC<Props> = ({ id, status, project, service, stateCh
       onModalClose();
       await handleTransaction(tx, toastContext, onSuccess);
     } catch (e) {
-      setCurrentStep(1);
       onModalClose(e);
     }
   };
