@@ -19,6 +19,7 @@ import { calculateProgress, healthStatus } from 'utils/project';
 import ProgressInfoView from './components/progressInfoView';
 import ProjectDetailsHeader from './components/projectDetailHeader';
 import ProjectDetailsView from './components/projectDetailsView';
+import ProjectLogView from './components/projectLogView';
 import ProjectServiceCard from './components/projectServiceCard';
 import ProjectStatusView from './components/projectStatusView';
 import { createServiceItem } from './config';
@@ -96,6 +97,7 @@ const ProjectDetailsPage = () => {
           <ProgressInfoView percent={progress} />
           <ProjectServiceCard id={id} indexerService={indexerSerive} queryService={querySerive} />
           <ProjectDetailsView id={id} project={projectInfo} />
+          <ProjectLogView container="coordinator_service" />
         </ContentContainer>
       )}
     </Container>
