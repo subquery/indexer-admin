@@ -14,7 +14,7 @@ import {
   useProjectService,
 } from 'hooks/projectHook';
 import { useRouter } from 'hooks/routerHook';
-import { calculateProgress, healthStatus } from 'utils/project';
+import { calculateProgress, serviceStatus } from 'utils/project';
 
 import ProgressInfoView from './components/progressInfoView';
 import ProjectDetailsHeader from './components/projectDetailHeader';
@@ -55,7 +55,7 @@ const ProjectDetailsPage = () => {
           'query',
           projectService.queryEndpoint,
           queryNodeVersion,
-          healthStatus(!!targetHeight)
+          serviceStatus(indexerHealthy)
         )
       );
       setIndexerService(
@@ -63,7 +63,7 @@ const ProjectDetailsPage = () => {
           'node',
           projectService?.nodeEndpoint,
           indexerNodeVersion,
-          healthStatus(indexerHealthy)
+          serviceStatus(indexerHealthy)
         )
       );
     }

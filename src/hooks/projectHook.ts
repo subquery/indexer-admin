@@ -16,14 +16,15 @@ import { cidToBytes32, concatU8A, IPFS } from 'utils/ipfs';
 import { getProxyServiceUrl } from 'utils/project';
 import { GET_PROJECT, GET_PROJECT_DETAILS } from 'utils/queries';
 
+// TODO: review whether need default value or other ways to provide default value
 const queryMetadataInitValue = {
   lastProcessedHeight: 0,
   lastProcessedTimestamp: 0,
   targetHeight: 0,
-  chain: 0,
+  chain: '',
   specName: '',
   genesisHash: '',
-  indexerHealthy: false,
+  indexerHealthy: undefined,
   indexerNodeVersion: '',
   queryNodeVersion: '',
 };

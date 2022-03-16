@@ -19,7 +19,7 @@ import { IndexingStatus } from 'pages/projects/constant';
 import { ProjectFormKey } from 'types/schemas';
 import { readyIndexing, startIndexing, stopIndexing } from 'utils/indexerActions';
 import { cidToBytes32 } from 'utils/ipfs';
-import { HealthStatus } from 'utils/project';
+import { ServiceStatus } from 'utils/project';
 import { START_PROJECT, STOP_PROJECT } from 'utils/queries';
 import { handleTransaction, ProjectActionType } from 'utils/transactions';
 
@@ -73,15 +73,15 @@ const ProjectDetailsHeader: FC<Props> = ({ id, status, project, service, stateCh
   const projectStatus = useMemo(() => {
     switch (status) {
       case IndexingStatus.NOTINDEXING:
-        return service?.status === HealthStatus.healthy
+        return service?.status === ServiceStatus.healthy
           ? ProjectStatus.Started
           : ProjectStatus.NotIndexing;
       case IndexingStatus.INDEXING:
-        return service?.status === HealthStatus.healthy
+        return service?.status === ServiceStatus.healthy
           ? ProjectStatus.Indexing
           : ProjectStatus.Terminated;
-      case IndexingStatus.READY: // FIXME: better check container exist for teminate status
-        return service?.status === HealthStatus.healthy
+      case IndexingStatus.READY:
+        return service?.status === ServiceStatus.healthy
           ? ProjectStatus.Ready
           : ProjectStatus.Terminated;
       default:
