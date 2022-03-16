@@ -29,41 +29,6 @@ import {
 } from '../config';
 import { TService } from '../types';
 
-const Container = styled.div`
-  display: flex;
-  justify-content: space-between;
-  min-height: 200px;
-`;
-
-const LeftContainer = styled.div`
-  display: flex;
-  flex: 1;
-  align-items: center;
-  min-width: 685px;
-`;
-
-const ContentContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  margin-left: 40px;
-`;
-
-const VersionContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 25px;
-  height: 50px;
-  width: 300px;
-`;
-
-const ActionContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-
 type Props = {
   id: string;
   status: IndexingStatus;
@@ -96,6 +61,7 @@ const ProjectDetailsHeader: FC<Props> = ({ id, status, project, service, stateCh
     [startProjectLoading, stopProjectLoading]
   );
 
+  // FIXME: create more specific project status -> NOT_INDEXING | PROJECT_STARTED | PROJECT_INDEXING | PROJECT_READY | PROJECT_TERMINATED
   const actionItems = useMemo(() => {
     const buttonItems = createButtonItems((type: ActionType) => {
       setActionType(type);
@@ -154,6 +120,7 @@ const ProjectDetailsHeader: FC<Props> = ({ id, status, project, service, stateCh
         setCurrentStep(1);
       } catch (e) {
         formHelper.setErrors({ [ProjectFormKey.networkEndpoint]: 'Invalid service endpoint' });
+        console.error('Failed to start project:', e);
       }
     },
     () => indexingAction(ActionType.startIndexing)
@@ -237,3 +204,38 @@ const ProjectDetailsHeader: FC<Props> = ({ id, status, project, service, stateCh
 };
 
 export default ProjectDetailsHeader;
+
+const Container = styled.div`
+  display: flex;
+  justify-content: space-between;
+  min-height: 200px;
+`;
+
+const LeftContainer = styled.div`
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 685px;
+`;
+
+const ContentContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-left: 40px;
+`;
+
+const VersionContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+  height: 50px;
+  width: 300px;
+`;
+
+const ActionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
