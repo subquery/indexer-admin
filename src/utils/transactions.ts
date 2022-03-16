@@ -2,20 +2,31 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ContractTransaction } from 'ethers';
+import { FormikHelpers, FormikValues } from 'formik';
 
 import { ToastContext, ToastProps } from 'containers/toastContext';
 
+// TODO: reorganise these types
 export enum ActionType {
   unregister = 'unregister',
   configCntroller = 'configCntroller',
   addProject = 'addProject',
-  removeProject = 'removeProject',
-  configServices = 'configServices',
-  startIndexing = 'startIndexing',
-  restartIndexing = 'restartIndexing',
-  readyIndexing = 'readyIndexing',
-  stopIndexing = 'stropIndexing',
 }
+
+export enum ProjectActionType {
+  StartIndexing = 'StartIndexing',
+  AnnounceIndexing = 'AnnounceIndexing',
+  RestartProject = 'RestartProject',
+  AnnounceReady = 'AnnounceReady',
+  StopProject = 'StopProject',
+  AnnounceNotIndexing = 'AnnounceNotIndexing',
+  StopIndexing = 'StopIndexing',
+}
+
+export type ModalActionType = ActionType | ProjectActionType;
+
+export type ClickAction = (type?: ModalActionType) => void;
+export type FormSubmit = (values: FormikValues, helper: FormikHelpers<FormikValues>) => void;
 
 export function txLoadingToast(txHash: string): ToastProps {
   return { type: 'loading', text: `Processing transaction: ${txHash}` };

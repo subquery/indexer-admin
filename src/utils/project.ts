@@ -19,3 +19,7 @@ export function healthStatus(status: boolean): HealthStatus {
 export function getProxyServiceUrl(id: string): string {
   return `${window.env.PROXY_SERVICE_URL}/query/${id}`;
 }
+
+export function projectId(cid: string): string {
+  return cid.substring(0, 15).toLowerCase();
+}

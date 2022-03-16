@@ -1,9 +1,8 @@
 // Copyright 2020-2022 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { FormSubmit } from 'components/modalView';
 import { initialProjectValues, ProjectFormKey, ProjectFormSchema } from 'types/schemas';
-import { ActionType } from 'utils/transactions';
+import { ActionType, FormSubmit } from 'utils/transactions';
 
 export enum IndexingStatus {
   NOTINDEXING,

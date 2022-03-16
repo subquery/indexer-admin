@@ -1,9 +1,8 @@
 // Copyright 2020-2022 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { ClickAction, FormSubmit } from 'components/modalView';
 import { ControllerFormKey, ControllerFormSchema, initialControllerValues } from 'types/schemas';
-import { ActionType } from 'utils/transactions';
+import { ActionType, ClickAction, FormSubmit } from 'utils/transactions';
 
 export const modalTitles = {
   [ActionType.configCntroller]: 'Config Controller Account',

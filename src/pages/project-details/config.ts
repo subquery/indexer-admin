@@ -1,34 +1,31 @@
 // Copyright 2020-2022 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { ClickAction, FormSubmit } from 'components/modalView';
-import {
-  ConfigServicesSchema,
-  initialIndexingValues,
-  initialServiceValues,
-  ProjectFormKey,
-  StartIndexingSchema,
-} from 'types/schemas';
-import { ActionType } from 'utils/transactions';
+import { initialIndexingValues, ProjectFormKey, StartIndexingSchema } from 'types/schemas';
+import { ClickAction, FormSubmit, ProjectActionType } from 'utils/transactions';
 
-import { IndexingStatus } from '../projects/constant';
+import prompts from './prompts';
 
-export const modalTitles = {
-  [ActionType.removeProject]: 'Remove Project',
-  [ActionType.configServices]: 'Config Project Services',
-  [ActionType.startIndexing]: 'Start Indexing Project',
-  [ActionType.restartIndexing]: 'Restart Indexing Project',
-  [ActionType.readyIndexing]: 'Publish Indexing to Ready',
-  [ActionType.stopIndexing]: 'Stop Indexing Project',
-};
+export enum ProjectStatus {
+  NotIndexing,
+  Started,
+  Indexing,
+  Ready,
+  Terminated,
+}
 
-type TButtonItem = {
+export type TransactionType =
+  | ProjectActionType.AnnounceIndexing
+  | ProjectActionType.AnnounceReady
+  | ProjectActionType.AnnounceNotIndexing;
+
+type ButtonItem = {
   title: string;
   action: () => void;
   color?: string;
 };
 
-const createButtonItem = (title: string, action: () => void, color?: string): TButtonItem => ({
+const createButtonItem = (title: string, action: () => void, color?: string): ButtonItem => ({
   title,
   action,
   color,
@@ -40,70 +37,51 @@ export const createServiceItem = (type: string, url: string, version: string, st
   status,
 });
 
-export const createButtonItems = (onButtonClick: (type: ActionType) => void) => ({
-  [IndexingStatus.NOTINDEXING]: [
-    createButtonItem('Start Indexing', () => onButtonClick(ActionType.startIndexing)),
+export const createButtonItems = (onButtonClick: (type: ProjectActionType) => void) => ({
+  [ProjectStatus.NotIndexing]: [
+    createButtonItem('Start Indexing', () => onButtonClick(ProjectActionType.StartIndexing)),
   ],
-  [IndexingStatus.INDEXING]: [
-    createButtonItem('Retart Indexing', () => onButtonClick(ActionType.restartIndexing)),
-    createButtonItem('Publish to Ready', () => onButtonClick(ActionType.readyIndexing)),
-    createButtonItem('Stop Indexing', () => onButtonClick(ActionType.stopIndexing)),
+  [ProjectStatus.Started]: [
+    createButtonItem('Announce Indexing', () => onButtonClick(ProjectActionType.AnnounceIndexing)),
+    createButtonItem('Stop Project', () => onButtonClick(ProjectActionType.StopProject)),
   ],
-  [IndexingStatus.READY]: [
-    createButtonItem('Retart Indexing', () => onButtonClick(ActionType.restartIndexing)),
-    createButtonItem('Stop Indexing', () => onButtonClick(ActionType.stopIndexing)),
+  [ProjectStatus.Indexing]: [
+    createButtonItem('Retart Indexing', () => onButtonClick(ProjectActionType.RestartProject)),
+    createButtonItem('Publish to Ready', () => onButtonClick(ProjectActionType.AnnounceReady)),
+    createButtonItem('Stop Indexing', () => onButtonClick(ProjectActionType.StopIndexing)),
   ],
-});
-
-export const createRemoveProjectSteps = (onRemoveProject: ClickAction) => ({
-  [ActionType.removeProject]: [
-    {
-      index: 0,
-      title: 'Remove Project',
-      desc: 'Remove the project from your coordinator service, you can add it back at anytime.',
-      buttonTitle: 'Remove Project',
-      onClick: onRemoveProject,
-    },
+  [ProjectStatus.Ready]: [
+    createButtonItem('Retart Indexing', () => onButtonClick(ProjectActionType.RestartProject)),
+    createButtonItem('Stop Indexing', () => onButtonClick(ProjectActionType.StopIndexing)),
+  ],
+  [ProjectStatus.Terminated]: [
+    createButtonItem('Announce Not Indexing', () =>
+      onButtonClick(ProjectActionType.AnnounceNotIndexing)
+    ),
   ],
 });
 
-export const createConfigServicesSteps = (onSyncnodeEndpoint: FormSubmit) => ({
-  [ActionType.configServices]: [
-    {
-      index: 0,
-      title: 'Indexer Service Endpiont',
-      desc: 'Upload the indexer endpoint and query endpoint to you coordinator service.',
-      buttonTitle: 'Sync Endpoint',
-      form: {
-        formValues: initialServiceValues,
-        schema: ConfigServicesSchema,
-        onFormSubmit: onSyncnodeEndpoint,
-        items: [
-          {
-            formKey: ProjectFormKey.nodeEndpoint,
-            title: 'Indexer Service Endpiont',
-            placeholder: 'https://api.subquery.network/example',
-          },
-          {
-            formKey: ProjectFormKey.queryEndpoint,
-            title: 'Query Service Endpiont',
-            placeholder: 'https://api.subquery.network/example',
-          },
-        ],
-      },
-    },
-  ],
-});
+export const modalTitles = {
+  [ProjectActionType.StartIndexing]: 'Start Indexing Project',
+  [ProjectActionType.RestartProject]: 'Restart Indexing Project',
+  [ProjectActionType.AnnounceIndexing]: 'Announce Indexing Project',
+  [ProjectActionType.AnnounceReady]: 'Publish Indexing to Ready',
+  [ProjectActionType.StopProject]: 'Stop Project',
+  [ProjectActionType.AnnounceNotIndexing]: 'Announce Not Indexing Project',
+  [ProjectActionType.StopIndexing]: 'Stop Indexing',
+};
+
+// type ActionStep = Record<ProjectActionType, StepItem[]>;
 
 export const createStartIndexingSteps = (
   onStartProject: FormSubmit,
   onSendTransaction: ClickAction
 ) => ({
-  [ActionType.startIndexing]: [
+  [ProjectActionType.StartIndexing]: [
     {
       index: 0,
-      title: 'Indexing Project',
-      desc: 'Start indexing project will start the subquery node service indexing the project and start a query service at the same time. It takes around 1 mins to start the services, you can see the progress and related information after everything is ready.',
+      title: prompts.startProject.title,
+      desc: prompts.startProject.desc,
       buttonTitle: 'Indexing Project',
       form: {
         formValues: initialIndexingValues,
@@ -121,8 +99,44 @@ export const createStartIndexingSteps = (
     },
     {
       index: 1,
-      title: 'Update Status on Subquery Network',
-      desc: 'Send transaction to start indexing the project on contract, the controller account on coordinator service will start to update the status of indexing service on the contract once the transaction completed. The transaction processing time may take around 10s, it depends on the network and gas fee. You will see the processing status on the top of the page once you confim the transaction on the MetaMask.',
+      title: prompts.announceIndexing.title,
+      desc: prompts.announceIndexing.desc,
+      buttonTitle: 'Send Transction',
+      onClick: onSendTransaction,
+    },
+  ],
+});
+
+export const createRestartProjectSteps = (onStartProject: FormSubmit) => ({
+  [ProjectActionType.RestartProject]: [
+    {
+      index: 0,
+      title: prompts.restartProject.title,
+      desc: prompts.restartProject.desc,
+      buttonTitle: 'Restart Project',
+      form: {
+        formValues: initialIndexingValues,
+        schema: StartIndexingSchema,
+        onFormSubmit: onStartProject,
+        items: [
+          {
+            formKey: ProjectFormKey.networkEndpoint,
+            title: 'Indexing Network Endpiont',
+            placeholder: 'wss://polkadot.api.onfinality.io/public-ws',
+          },
+        ],
+      },
+      onClick: onStartProject,
+    },
+  ],
+});
+
+export const createAnnounceIndexingSteps = (onSendTransaction: ClickAction) => ({
+  [ProjectActionType.AnnounceIndexing]: [
+    {
+      index: 0,
+      title: prompts.announceIndexing.title,
+      desc: prompts.announceIndexing.desc,
       buttonTitle: 'Send Transction',
       onClick: onSendTransaction,
     },
@@ -130,33 +144,57 @@ export const createStartIndexingSteps = (
 });
 
 export const createReadyIndexingSteps = (onSendTransaction: ClickAction) => ({
-  [ActionType.readyIndexing]: [
+  [ProjectActionType.AnnounceReady]: [
     {
       index: 0,
-      title: 'Update Indexing To Ready',
-      desc: 'Send transaction to change indexing status to ready on contract, the explorer will display you query endpoint once the transaction completed. The transaction processing time may take around 10s, it depends on the network and gas fee. You will see the processing status on the top of the page once you confim the transaction on the MetaMask.',
+      title: prompts.announceReady.title,
+      desc: prompts.announceReady.desc,
       buttonTitle: 'Send Transction',
       onClick: onSendTransaction,
     },
   ],
 });
 
-export const createStopIndexingSteps = (
-  onStartProject: ClickAction,
-  onSendTransaction: ClickAction
-) => ({
-  [ActionType.stopIndexing]: [
+export const createNotIndexingSteps = (onSendTransaction: ClickAction) => ({
+  [ProjectActionType.AnnounceNotIndexing]: [
     {
       index: 0,
-      title: 'Stop Indexing Project',
-      desc: 'Stop indexing project will stop the subquery node service and query service, you can restart indexing the project at any time. It takes around 1 mins to start the services.',
+      title: prompts.announceNotIndexing.title,
+      desc: prompts.announceNotIndexing.desc,
+      buttonTitle: 'Send Transction',
+      onClick: onSendTransaction,
+    },
+  ],
+});
+
+export const createStopProjectSteps = (onStopProject: ClickAction) => ({
+  [ProjectActionType.StopProject]: [
+    {
+      index: 0,
+      title: prompts.stopProject.title,
+      desc: prompts.stopProject.desc,
       buttonTitle: 'Stop Project',
-      onClick: onStartProject,
+      onClick: onStopProject,
+    },
+  ],
+});
+
+export const createStopIndexingSteps = (
+  onStopProject: ClickAction,
+  onSendTransaction: ClickAction
+) => ({
+  [ProjectActionType.StopIndexing]: [
+    {
+      index: 0,
+      title: prompts.stopProject.title,
+      desc: prompts.stopProject.desc,
+      buttonTitle: 'Stop Indexing',
+      onClick: onStopProject,
     },
     {
       index: 1,
-      title: 'Update Status on Subquery Network',
-      desc: 'Sorry to see this project will be terminated from the Subquery Network, please note that the service endpoint for this project will also be removed once the transaction processed. The transaction processing time may take around 10s, it depends on the network and gas fee. You will see the processing status on the top of the page once you confim the transaction on the MetaMask.',
+      title: prompts.announceNotIndexing.title,
+      desc: prompts.announceNotIndexing.desc,
       buttonTitle: 'Send Transction',
       onClick: onSendTransaction,
     },

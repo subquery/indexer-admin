@@ -77,12 +77,6 @@ const RegisterPage = () => {
         text: 'Can not find account, make sure MetaMask is connected',
       });
     }
-    if (!isIndexer) {
-      return dispatchToast({
-        type: 'error',
-        text: 'Account is not an indexer, switch to indexer account',
-      });
-    }
 
     await updateIndexer(account);
     setLoading(false);
