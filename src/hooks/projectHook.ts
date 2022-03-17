@@ -21,7 +21,7 @@ const queryMetadataInitValue = {
   lastProcessedHeight: 0,
   lastProcessedTimestamp: 0,
   targetHeight: 0,
-  chain: '',
+  chain: 0,
   specName: '',
   genesisHash: '',
   indexerHealthy: undefined,

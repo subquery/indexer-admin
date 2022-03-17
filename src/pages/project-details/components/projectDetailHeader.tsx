@@ -145,9 +145,7 @@ const ProjectDetailsHeader: FC<Props> = ({ id, status, project, service, stateCh
     }
   };
 
-  const startIndexingSteps = createStartIndexingSteps(startProject, () =>
-    indexingAction(ProjectActionType.AnnounceIndexing)
-  );
+  const startIndexingSteps = createStartIndexingSteps(startProject);
   const stopIndexingSteps = createStopIndexingSteps(stopProject, () =>
     indexingAction(ProjectActionType.AnnounceNotIndexing)
   );
@@ -190,7 +188,7 @@ const ProjectDetailsHeader: FC<Props> = ({ id, status, project, service, stateCh
             {project.owner}
           </Text>
           <VersionContainer>
-            <TagItem versionType="INDEXED NETWORK" value="TESTNET" />
+            <TagItem versionType="INDEXED NETWORK" value={project.queryMetadata?.chain} />
             <Separator height={50} />
             <TagItem versionType="VERSION" value={`V${project.version}`} />
           </VersionContainer>

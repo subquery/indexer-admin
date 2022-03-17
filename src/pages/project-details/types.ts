@@ -21,10 +21,11 @@ export type TQueryMetadata = {
   lastProcessedHeight: number;
   lastProcessedTimestamp: number;
   targetHeight: number;
+  // TODO: check type of the chain
   chain: number;
   specName: string;
   genesisHash: string;
-  indexerHealthy: boolean;
+  indexerHealthy?: boolean;
   indexerNodeVersion: string;
   queryNodeVersion: string;
 };

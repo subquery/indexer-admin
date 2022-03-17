@@ -46,15 +46,16 @@ export const createButtonItems = (onButtonClick: (type: ProjectActionType) => vo
     createButtonItem('Stop Project', () => onButtonClick(ProjectActionType.StopProject)),
   ],
   [ProjectStatus.Indexing]: [
-    createButtonItem('Retart Indexing', () => onButtonClick(ProjectActionType.RestartProject)),
+    createButtonItem('Restart Indexing', () => onButtonClick(ProjectActionType.RestartProject)),
     createButtonItem('Publish to Ready', () => onButtonClick(ProjectActionType.AnnounceReady)),
     createButtonItem('Stop Indexing', () => onButtonClick(ProjectActionType.StopIndexing)),
   ],
   [ProjectStatus.Ready]: [
-    createButtonItem('Retart Indexing', () => onButtonClick(ProjectActionType.RestartProject)),
+    createButtonItem('Restart Indexing', () => onButtonClick(ProjectActionType.RestartProject)),
     createButtonItem('Stop Indexing', () => onButtonClick(ProjectActionType.StopIndexing)),
   ],
   [ProjectStatus.Terminated]: [
+    createButtonItem('Restart Indexing', () => onButtonClick(ProjectActionType.RestartProject)),
     createButtonItem('Announce Not Indexing', () =>
       onButtonClick(ProjectActionType.AnnounceNotIndexing)
     ),
@@ -73,10 +74,7 @@ export const modalTitles = {
 
 // type ActionStep = Record<ProjectActionType, StepItem[]>;
 
-export const createStartIndexingSteps = (
-  onStartProject: FormSubmit,
-  onSendTransaction: ClickAction
-) => ({
+export const createStartIndexingSteps = (onStartProject: FormSubmit) => ({
   [ProjectActionType.StartIndexing]: [
     {
       index: 0,
@@ -96,13 +94,6 @@ export const createStartIndexingSteps = (
         ],
       },
       onClick: onStartProject,
-    },
-    {
-      index: 1,
-      title: prompts.announceIndexing.title,
-      desc: prompts.announceIndexing.desc,
-      buttonTitle: 'Send Transction',
-      onClick: onSendTransaction,
     },
   ],
 });
