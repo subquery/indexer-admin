@@ -116,6 +116,7 @@ const RegisterPage = () => {
       // TODO: 1. validate `proxy endpoint`, default request `/discovery`;
       // helper.setErrors({ [RegisterFormKey.proxyEndpoint]: 'Invalid proxy endpoint' });
 
+      // TODO: need to review whether need `rate * 10`
       const tx = await indexerRegistry(sdk, signer, amount.toString(), indexerMetadata, rate * 10);
       const receipt = await tx.wait(1);
       if (!receipt.status) {

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { initialIndexingValues, ProjectFormKey, StartIndexingSchema } from 'types/schemas';
-import { ClickAction, FormSubmit, ProjectActionType } from 'utils/transactions';
+import { ClickAction, FormSubmit, ProjectAction } from 'utils/transactions';
 
 import prompts from './prompts';
 
@@ -15,9 +15,9 @@ export enum ProjectStatus {
 }
 
 export type TransactionType =
-  | ProjectActionType.AnnounceIndexing
-  | ProjectActionType.AnnounceReady
-  | ProjectActionType.AnnounceNotIndexing;
+  | ProjectAction.AnnounceIndexing
+  | ProjectAction.AnnounceReady
+  | ProjectAction.AnnounceNotIndexing;
 
 type ButtonItem = {
   title: string;
@@ -37,45 +37,45 @@ export const createServiceItem = (type: string, url: string, version: string, st
   status,
 });
 
-export const createButtonItems = (onButtonClick: (type: ProjectActionType) => void) => ({
+export const createButtonItems = (onButtonClick: (type: ProjectAction) => void) => ({
   [ProjectStatus.NotIndexing]: [
-    createButtonItem('Start Indexing', () => onButtonClick(ProjectActionType.StartIndexing)),
+    createButtonItem('Start Indexing', () => onButtonClick(ProjectAction.StartIndexing)),
   ],
   [ProjectStatus.Started]: [
-    createButtonItem('Announce Indexing', () => onButtonClick(ProjectActionType.AnnounceIndexing)),
-    createButtonItem('Stop Project', () => onButtonClick(ProjectActionType.StopProject)),
+    createButtonItem('Announce Indexing', () => onButtonClick(ProjectAction.AnnounceIndexing)),
+    createButtonItem('Stop Project', () => onButtonClick(ProjectAction.StopProject)),
   ],
   [ProjectStatus.Indexing]: [
-    createButtonItem('Restart Indexing', () => onButtonClick(ProjectActionType.RestartProject)),
-    createButtonItem('Publish to Ready', () => onButtonClick(ProjectActionType.AnnounceReady)),
-    createButtonItem('Stop Indexing', () => onButtonClick(ProjectActionType.StopIndexing)),
+    createButtonItem('Restart Indexing', () => onButtonClick(ProjectAction.RestartProject)),
+    createButtonItem('Publish to Ready', () => onButtonClick(ProjectAction.AnnounceReady)),
+    createButtonItem('Stop Indexing', () => onButtonClick(ProjectAction.StopIndexing)),
   ],
   [ProjectStatus.Ready]: [
-    createButtonItem('Restart Indexing', () => onButtonClick(ProjectActionType.RestartProject)),
-    createButtonItem('Stop Indexing', () => onButtonClick(ProjectActionType.StopIndexing)),
+    createButtonItem('Restart Indexing', () => onButtonClick(ProjectAction.RestartProject)),
+    createButtonItem('Stop Indexing', () => onButtonClick(ProjectAction.StopIndexing)),
   ],
   [ProjectStatus.Terminated]: [
-    createButtonItem('Restart Indexing', () => onButtonClick(ProjectActionType.RestartProject)),
+    createButtonItem('Restart Indexing', () => onButtonClick(ProjectAction.RestartProject)),
     createButtonItem('Announce Not Indexing', () =>
-      onButtonClick(ProjectActionType.AnnounceNotIndexing)
+      onButtonClick(ProjectAction.AnnounceNotIndexing)
     ),
   ],
 });
 
 export const modalTitles = {
-  [ProjectActionType.StartIndexing]: 'Start Indexing Project',
-  [ProjectActionType.RestartProject]: 'Restart Indexing Project',
-  [ProjectActionType.AnnounceIndexing]: 'Announce Indexing Project',
-  [ProjectActionType.AnnounceReady]: 'Publish Indexing to Ready',
-  [ProjectActionType.StopProject]: 'Stop Project',
-  [ProjectActionType.AnnounceNotIndexing]: 'Announce Not Indexing Project',
-  [ProjectActionType.StopIndexing]: 'Stop Indexing',
+  [ProjectAction.StartIndexing]: 'Start Indexing Project',
+  [ProjectAction.RestartProject]: 'Restart Indexing Project',
+  [ProjectAction.AnnounceIndexing]: 'Announce Indexing Project',
+  [ProjectAction.AnnounceReady]: 'Publish Indexing to Ready',
+  [ProjectAction.StopProject]: 'Stop Project',
+  [ProjectAction.AnnounceNotIndexing]: 'Announce Not Indexing Project',
+  [ProjectAction.StopIndexing]: 'Stop Indexing',
 };
 
-// type ActionStep = Record<ProjectActionType, StepItem[]>;
+// type ActionStep = Record<ProjectAction, StepItem[]>;
 
 export const createStartIndexingSteps = (onStartProject: FormSubmit) => ({
-  [ProjectActionType.StartIndexing]: [
+  [ProjectAction.StartIndexing]: [
     {
       index: 0,
       title: prompts.startProject.title,
@@ -99,7 +99,7 @@ export const createStartIndexingSteps = (onStartProject: FormSubmit) => ({
 });
 
 export const createRestartProjectSteps = (onStartProject: FormSubmit) => ({
-  [ProjectActionType.RestartProject]: [
+  [ProjectAction.RestartProject]: [
     {
       index: 0,
       title: prompts.restartProject.title,
@@ -123,7 +123,7 @@ export const createRestartProjectSteps = (onStartProject: FormSubmit) => ({
 });
 
 export const createAnnounceIndexingSteps = (onSendTransaction: ClickAction) => ({
-  [ProjectActionType.AnnounceIndexing]: [
+  [ProjectAction.AnnounceIndexing]: [
     {
       index: 0,
       title: prompts.announceIndexing.title,
@@ -135,7 +135,7 @@ export const createAnnounceIndexingSteps = (onSendTransaction: ClickAction) => (
 });
 
 export const createReadyIndexingSteps = (onSendTransaction: ClickAction) => ({
-  [ProjectActionType.AnnounceReady]: [
+  [ProjectAction.AnnounceReady]: [
     {
       index: 0,
       title: prompts.announceReady.title,
@@ -147,7 +147,7 @@ export const createReadyIndexingSteps = (onSendTransaction: ClickAction) => ({
 });
 
 export const createNotIndexingSteps = (onSendTransaction: ClickAction) => ({
-  [ProjectActionType.AnnounceNotIndexing]: [
+  [ProjectAction.AnnounceNotIndexing]: [
     {
       index: 0,
       title: prompts.announceNotIndexing.title,
@@ -159,7 +159,7 @@ export const createNotIndexingSteps = (onSendTransaction: ClickAction) => ({
 });
 
 export const createStopProjectSteps = (onStopProject: ClickAction) => ({
-  [ProjectActionType.StopProject]: [
+  [ProjectAction.StopProject]: [
     {
       index: 0,
       title: prompts.stopProject.title,
@@ -174,7 +174,7 @@ export const createStopIndexingSteps = (
   onStopProject: ClickAction,
   onSendTransaction: ClickAction
 ) => ({
-  [ProjectActionType.StopIndexing]: [
+  [ProjectAction.StopIndexing]: [
     {
       index: 0,
       title: prompts.stopProject.title,

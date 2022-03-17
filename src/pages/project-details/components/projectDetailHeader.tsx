@@ -11,17 +11,14 @@ import Avatar from 'components/avatar';
 import ModalView from 'components/modalView';
 import { Button, Separator, Text } from 'components/primary';
 import { TagItem } from 'components/tagItem';
-import { useContractSDK } from 'containers/contractSdk';
-import { useToast } from 'containers/toastContext';
 import { ProjectDetails } from 'hooks/projectHook';
-import { useSigner } from 'hooks/web3Hook';
+import { useIndexingAction } from 'hooks/transactionHook';
 import { IndexingStatus } from 'pages/projects/constant';
 import { ProjectFormKey } from 'types/schemas';
-import { readyIndexing, startIndexing, stopIndexing } from 'utils/indexerActions';
 import { cidToBytes32 } from 'utils/ipfs';
 import { ServiceStatus } from 'utils/project';
 import { START_PROJECT, STOP_PROJECT } from 'utils/queries';
-import { handleTransaction, ProjectActionType } from 'utils/transactions';
+import { ProjectAction } from 'utils/transactions';
 
 import {
   createAnnounceIndexingSteps,
@@ -34,7 +31,6 @@ import {
   createStopProjectSteps,
   modalTitles,
   ProjectStatus,
-  TransactionType,
 } from '../config';
 import { TService } from '../types';
 
@@ -51,16 +47,13 @@ const ProjectDetailsHeader: FC<Props> = ({ id, status, project, service, stateCh
 
   const [visible, setVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [actionType, setActionType] = useState<ProjectActionType>();
+  const [actionType, setActionType] = useState<ProjectAction>();
 
-  const signer = useSigner();
-  const sdk = useContractSDK();
-  const toastContext = useToast();
+  const indexingAction = useIndexingAction(id);
   const [startProjectRequest, { loading: startProjectLoading }] = useMutation(START_PROJECT);
   const [stopProjectRequest, { loading: stopProjectLoading }] = useMutation(STOP_PROJECT);
 
-  const onModalClose = (e?: unknown) => {
-    console.error('Transaction error:', e);
+  const onModalClose = () => {
     setVisible(false);
     setCurrentStep(0);
   };
@@ -89,7 +82,7 @@ const ProjectDetailsHeader: FC<Props> = ({ id, status, project, service, stateCh
     }
   }, [status, service]);
 
-  const buttonItems = createButtonItems((type: ProjectActionType) => {
+  const buttonItems = createButtonItems((type: ProjectAction) => {
     setActionType(type);
     setVisible(true);
   });
@@ -98,25 +91,6 @@ const ProjectDetailsHeader: FC<Props> = ({ id, status, project, service, stateCh
     if (isUndefined(projectStatus)) return [];
     return buttonItems[projectStatus];
   }, [projectStatus]);
-
-  const indexingTransactions = useMemo(
-    () => ({
-      [ProjectActionType.AnnounceIndexing]: () => startIndexing(sdk, signer, id),
-      [ProjectActionType.AnnounceReady]: () => readyIndexing(sdk, signer, id),
-      [ProjectActionType.AnnounceNotIndexing]: () => stopIndexing(sdk, signer, id),
-    }),
-    [sdk, signer, id]
-  );
-
-  const indexingAction = async (type: TransactionType, onSuccess?: () => void) => {
-    try {
-      const tx = await indexingTransactions[type]();
-      onModalClose();
-      await handleTransaction(tx, toastContext, onSuccess);
-    } catch (e) {
-      onModalClose(e);
-    }
-  };
 
   const updateState = (deplay = 3000) => {
     setTimeout(() => {
@@ -147,18 +121,18 @@ const ProjectDetailsHeader: FC<Props> = ({ id, status, project, service, stateCh
 
   const startIndexingSteps = createStartIndexingSteps(startProject);
   const stopIndexingSteps = createStopIndexingSteps(stopProject, () =>
-    indexingAction(ProjectActionType.AnnounceNotIndexing)
+    indexingAction(ProjectAction.AnnounceNotIndexing, onModalClose)
   );
   const restartProjectSteps = createRestartProjectSteps(startProject);
   const stopProjectSteps = createStopProjectSteps(stopProject);
   const announceIndexingSteps = createAnnounceIndexingSteps(() =>
-    indexingAction(ProjectActionType.AnnounceIndexing)
+    indexingAction(ProjectAction.AnnounceIndexing, onModalClose)
   );
   const announceReadySteps = createReadyIndexingSteps(() =>
-    indexingAction(ProjectActionType.AnnounceReady)
+    indexingAction(ProjectAction.AnnounceReady, onModalClose)
   );
   const announceNotIndexingSteps = createNotIndexingSteps(() =>
-    indexingAction(ProjectActionType.AnnounceNotIndexing)
+    indexingAction(ProjectAction.AnnounceNotIndexing, onModalClose)
   );
 
   const steps = {

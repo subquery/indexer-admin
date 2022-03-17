@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { initialProjectValues, ProjectFormKey, ProjectFormSchema } from 'types/schemas';
-import { ActionType, FormSubmit } from 'utils/transactions';
+import { FormSubmit, ProjectsAction } from 'utils/transactions';
 
 export enum IndexingStatus {
   NOTINDEXING,
@@ -23,7 +23,7 @@ export const statusText = {
 };
 
 export const createAddProjectSteps = (onAddProject: FormSubmit) => ({
-  [ActionType.addProject]: [
+  [ProjectsAction.addProject]: [
     {
       index: 0,
       title: 'Add new project',

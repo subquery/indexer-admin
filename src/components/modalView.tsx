@@ -11,7 +11,7 @@ import { ObjectSchema } from 'yup';
 import { RegistrySteps } from 'pages/register/styles';
 import { getStepStatus } from 'pages/register/utils';
 import cross from 'resources/cross.svg';
-import { ClickAction, FormSubmit, ModalActionType } from 'utils/transactions';
+import { ClickAction, FormSubmit, ModalAction } from 'utils/transactions';
 
 import { FieldItem } from './formItem';
 import Icon from './Icon';
@@ -64,7 +64,7 @@ type Props = {
   steps: StepItem[] | undefined;
   currentStep: number;
   loading?: boolean;
-  type?: ModalActionType;
+  type?: ModalAction;
   visible: boolean;
   title: string;
   onClose: () => void;
@@ -93,6 +93,7 @@ const ModalView: FC<Props> = ({
             <div>
               {item.form?.items.map(({ title, formKey, placeholder }) => (
                 <FieldItem
+                  key={title}
                   title={title}
                   fieldKey={formKey ?? ''}
                   placeholder={placeholder ?? ''}
@@ -165,7 +166,7 @@ const ModalView: FC<Props> = ({
     );
 
   return (
-    <Modal isOpen={visible} style={modalStyles} closeTimeoutMS={200}>
+    <Modal isOpen={visible} style={modalStyles} closeTimeoutMS={200} ariaHideApp={false}>
       {renderHeader()}
       <Container>
         {renderSteps()}

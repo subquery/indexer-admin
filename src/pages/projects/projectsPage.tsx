@@ -13,7 +13,7 @@ import { getProjectInfo, ProjectDetails, useProjectDetailList } from 'hooks/proj
 import { useRouter } from 'hooks/routerHook';
 import { ProjectFormKey } from 'types/schemas';
 import { ADD_PROJECT, GET_PROJECTS } from 'utils/queries';
-import { ActionType } from 'utils/transactions';
+import { ProjectsAction } from 'utils/transactions';
 
 import ProjecItemsHeader from './components/projecItemsHeader';
 import ProjectItem from './components/projectItem';
@@ -86,7 +86,7 @@ const Projects = () => {
         // @ts-ignore
         steps={step.addProject}
         currentStep={0}
-        type={ActionType.addProject}
+        type={ProjectsAction.addProject}
         loading={loading}
       />
     </Container>

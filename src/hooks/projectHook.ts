@@ -12,7 +12,7 @@ import { useToast } from 'containers/toastContext';
 import { useWeb3 } from 'hooks/web3Hook';
 import { ProjectServiceMetadata, TQueryMetadata } from 'pages/project-details/types';
 import { IndexingStatus } from 'pages/projects/constant';
-import { cidToBytes32, concatU8A, IPFS } from 'utils/ipfs';
+import { cidToBytes32, getMetadata } from 'utils/ipfs';
 import { getProxyServiceUrl } from 'utils/project';
 import { GET_PROJECT, GET_PROJECT_DETAILS } from 'utils/queries';
 
@@ -134,19 +134,7 @@ export const getProjectDetails = async (deploymentId: string): Promise<ProjectDe
     return projectInitValue;
   }
 
-  const metadataCid = projectInfo.metadata;
-  const results = IPFS.cat(metadataCid);
-  let raw: Uint8Array | undefined;
-  // eslint-disable-next-line no-restricted-syntax
-  for await (const result of results) {
-    raw = raw ? concatU8A(raw, result) : result;
-  }
-  if (!raw) {
-    console.error('Unable to fetch metadata from ipfs');
-    return projectInitValue;
-  }
-
-  const metadata = JSON.parse(Buffer.from(raw).toString('utf8'));
+  const metadata = await getMetadata(projectInfo.metadata);
   const projectDetails: ProjectDetails = { ...projectInfo, ...metadata, id: deploymentId };
   return projectDetails;
 };

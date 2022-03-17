@@ -6,14 +6,18 @@ import { FormikHelpers, FormikValues } from 'formik';
 
 import { ToastContext, ToastProps } from 'containers/toastContext';
 
-// TODO: reorganise these types
-export enum ActionType {
+// TODO:  move types in type folder
+export enum AccountAction {
   unregister = 'unregister',
+  updateMetaData = 'updateMetadata',
   configCntroller = 'configCntroller',
+}
+
+export enum ProjectsAction {
   addProject = 'addProject',
 }
 
-export enum ProjectActionType {
+export enum ProjectAction {
   StartIndexing = 'StartIndexing',
   AnnounceIndexing = 'AnnounceIndexing',
   RestartProject = 'RestartProject',
@@ -23,9 +27,9 @@ export enum ProjectActionType {
   StopIndexing = 'StopIndexing',
 }
 
-export type ModalActionType = ActionType | ProjectActionType;
+export type ModalAction = AccountAction | ProjectsAction | ProjectAction;
 
-export type ClickAction = (type?: ModalActionType) => void;
+export type ClickAction = (type?: ModalAction) => void;
 export type FormSubmit = (values: FormikValues, helper: FormikHelpers<FormikValues>) => void;
 
 export function txLoadingToast(txHash: string): ToastProps {
@@ -49,13 +53,18 @@ export async function handleTransaction(
   const { dispatchToast, closeToast } = toastContext;
   dispatchToast(txLoadingToast(tx.hash));
 
-  const receipt = await tx.wait(1);
-  if (!receipt.status) {
-    onError && onError();
+  try {
+    const receipt = await tx.wait(1);
+    if (!receipt.status) {
+      onError && onError();
+      dispatchToast(txErrorToast(tx.hash));
+    } else {
+      onSuccess && onSuccess();
+      dispatchToast(txSuccessToast(tx.hash));
+    }
+  } catch (e) {
+    console.error('Transaction Failed:', e);
     dispatchToast(txErrorToast(tx.hash));
-  } else {
-    onSuccess && onSuccess();
-    dispatchToast(txSuccessToast(tx.hash));
   }
 
   setTimeout(() => closeToast(), 2000);
