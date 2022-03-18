@@ -127,7 +127,7 @@ export const getProjectInfo = async (deploymentId: string) => {
 };
 
 export const getProjectDetails = async (deploymentId: string): Promise<ProjectDetails> => {
-  const res = await getProjectInfo('QmaPNri6zia4iNHFSr72QcEWieCtss2KqCBVMXytf3m8yV');
+  const res = await getProjectInfo(deploymentId);
   const projectInfo = res.data.deployments.nodes[0]?.project;
   if (!projectInfo) {
     console.error('Unable to get metadata for project');
