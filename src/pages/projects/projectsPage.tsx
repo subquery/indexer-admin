@@ -9,7 +9,7 @@ import ModalView from 'components/modalView';
 import { Button, Text } from 'components/primary';
 import { useLoading } from 'containers/loadingContext';
 import { useIsIndexer } from 'hooks/indexerHook';
-import { getProjectInfo, ProjectDetails, useProjectDetailList } from 'hooks/projectHook';
+import { ProjectDetails, useProjectDetailList } from 'hooks/projectHook';
 import { useRouter } from 'hooks/routerHook';
 import { ProjectFormKey } from 'types/schemas';
 import { ADD_PROJECT, GET_PROJECTS } from 'utils/queries';
@@ -47,7 +47,6 @@ const Projects = () => {
   const step = createAddProjectSteps(async (values, helper) => {
     try {
       const id = values[ProjectFormKey.deploymentId];
-      await getProjectInfo(id);
       await addProject({ variables: { id } });
 
       setVisible(false);

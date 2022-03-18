@@ -17,11 +17,12 @@ import { getProxyServiceUrl } from 'utils/project';
 import { GET_PROJECT, GET_PROJECT_DETAILS } from 'utils/queries';
 
 // TODO: review whether need default value or other ways to provide default value
-const queryMetadataInitValue = {
+// TODO: refactor get project details
+const metadataInitValue = {
   lastProcessedHeight: 0,
   lastProcessedTimestamp: 0,
   targetHeight: 0,
-  chain: 0,
+  chain: '',
   specName: '',
   genesisHash: '',
   indexerHealthy: undefined,
@@ -42,7 +43,7 @@ const projectInitValue = {
   versionDescription: '',
   createdTimestamp: '',
   updatedTimestamp: '',
-  queryMetadata: undefined,
+  metadata: undefined,
   id: '',
   networkEndpoint: '',
   queryEndpoint: '',
@@ -97,7 +98,7 @@ export type ProjectDetails = {
   versionDescription: string;
   createdTimestamp: string;
   updatedTimestamp: string;
-  queryMetadata: TQueryMetadata | undefined;
+  metadata: TQueryMetadata | undefined;
 } & ProjectServiceMetadata;
 
 type Result = {
@@ -118,31 +119,33 @@ const queryRegistryClient = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-export const getProjectInfo = async (deploymentId: string) => {
-  const result = await queryRegistryClient.query<{ deployments: { nodes: Result[] } }>({
+export const getProjectDetails = async (deploymentId: string): Promise<ProjectDetails> => {
+  const res = await queryRegistryClient.query<{ deployments: { nodes: Result[] } }>({
     query: GET_PROJECT_DETAILS,
     variables: { deploymentId },
   });
-  return result;
-};
 
-export const getProjectDetails = async (deploymentId: string): Promise<ProjectDetails> => {
-  const res = await getProjectInfo(deploymentId);
   const projectInfo = res.data.deployments.nodes[0]?.project;
   if (!projectInfo) {
     console.error('Unable to get metadata for project');
     return projectInitValue;
   }
 
-  const metadata = await getMetadata(projectInfo.metadata);
-  const projectDetails: ProjectDetails = { ...projectInfo, ...metadata, id: deploymentId };
+  const projectMetadata = await getMetadata(projectInfo.metadata);
+  const queryMetadata = await getQueryMetadata(deploymentId);
+  const projectDetails = {
+    ...projectInfo,
+    ...projectMetadata,
+    metadata: queryMetadata,
+    id: deploymentId,
+  };
+
   return projectDetails;
 };
 
-export const useProjectDetails = (data: ProjectDetails): ProjectDetails | undefined => {
-  const [project, setProject] = useState<ProjectDetails | undefined>(data);
+export const useProjectDetails = (deploymentId: string): ProjectDetails | undefined => {
+  const [project, setProject] = useState<ProjectDetails | undefined>();
   const { toast } = useToast();
-  const deploymentId = data.id;
 
   const fetchMeta = useCallback(async () => {
     try {
@@ -183,7 +186,7 @@ export async function getQueryMetadata(deploymentID: string): Promise<TQueryMeta
     const metadata = get(result, 'data.data._metadata', null) as TQueryMetadata;
     return metadata;
   } catch {
-    return queryMetadataInitValue;
+    return metadataInitValue;
   }
 }
 
@@ -229,7 +232,7 @@ export function useProjectDetailList(data: any) {
       );
       setProjecList(
         result
-          .map(([detail, queryMetadata, status]) => ({ ...detail, status, queryMetadata }))
+          .map(([detail, metadata, status]) => ({ ...detail, status, metadata }))
           .filter(({ id }) => !!id)
       );
       setPageLoading(false);

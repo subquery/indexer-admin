@@ -38,7 +38,6 @@ export function useShowMetaMask(): boolean | undefined {
   const { pageLoading } = useLoading();
   const { indexer, load } = useCoordinatorIndexer();
   const [showMetaMask, setShowMetaMask] = useState<boolean>();
-  const isMetaMask = useIsMetaMask();
   const isCorrectAccount = () => account?.toLowerCase() === indexer?.toLocaleLowerCase();
 
   useEffect(() => {
@@ -48,7 +47,6 @@ export function useShowMetaMask(): boolean | undefined {
   useEffect(() => {
     // FIXME: how to identify `isFetching account`
     const enable = !pageLoading && (!account || !isCorrectAccount());
-    console.log('enable:', account, isMetaMask, pageLoading, enable);
     setShowMetaMask(enable);
   }, [account, indexer, pageLoading]);
 

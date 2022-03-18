@@ -29,7 +29,7 @@ const ProjectDetailsPage = () => {
   const { id } = useParams() as { id: string };
   const { data: projectDetails } = useLocation().state as { data: ProjectDetails };
   const status = useIndexingStatus(id);
-  const projectInfo = useProjectDetails(projectDetails);
+  const projectInfo = useProjectDetails(id);
   const projectService = useProjectService(id);
   const { setPageLoading } = useLoading();
   useRouter(!projectDetails);
@@ -37,18 +37,18 @@ const ProjectDetailsPage = () => {
   const [indexerSerive, setIndexerService] = useState<TService>();
   const [querySerive, setQueryService] = useState<TService>();
   const [progress, setProgress] = useState(0);
-  const [queryMetadata, setQueryMeta] = useState<TQueryMetadata>();
+  const [metadata, setMetadata] = useState<TQueryMetadata>();
 
-  const updateServicesInfo = (metadata: TQueryMetadata) => {
-    if (metadata && projectService) {
+  const updateServicesInfo = (queryMetadata: TQueryMetadata) => {
+    if (queryMetadata && projectService) {
       const {
         queryNodeVersion,
         indexerNodeVersion,
         lastProcessedHeight,
         targetHeight,
         indexerHealthy,
-      } = metadata;
-      setQueryMeta(metadata);
+      } = queryMetadata;
+      setMetadata(queryMetadata);
       setProgress(calculateProgress(targetHeight, lastProcessedHeight));
       setQueryService(
         createServiceItem(
@@ -92,7 +92,7 @@ const ProjectDetailsPage = () => {
             service={querySerive}
             stateChanged={() => getMetadata()}
           />
-          <ProjectStatusView status={status} metadata={queryMetadata} />
+          <ProjectStatusView status={status} metadata={metadata} />
           <ProgressInfoView percent={progress} />
           <ProjectServiceCard id={id} indexerService={indexerSerive} queryService={querySerive} />
           <ProjectTabbarView id={id} project={projectInfo} />

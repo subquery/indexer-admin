@@ -162,7 +162,7 @@ const ProjectDetailsHeader: FC<Props> = ({ id, status, project, service, stateCh
             {project.owner}
           </Text>
           <VersionContainer>
-            <TagItem versionType="INDEXED NETWORK" value={project.queryMetadata?.chain} />
+            <TagItem versionType="INDEXED NETWORK" value={project.metadata?.chain} />
             <Separator height={50} />
             <TagItem versionType="VERSION" value={`V${project.version}`} />
           </VersionContainer>

@@ -22,6 +22,7 @@ export const statusText = {
   [IndexingStatus.READY]: 'READY',
 };
 
+// TODO: remove the old logic
 export const createAddProjectSteps = (onAddProject: FormSubmit) => ({
   [ProjectsAction.addProject]: [
     {
