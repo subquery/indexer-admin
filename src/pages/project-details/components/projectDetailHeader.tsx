@@ -165,13 +165,15 @@ const ProjectDetailsHeader: FC<Props> = ({ id, status, project, service, stateCh
             <TagItem versionType="INDEXED NETWORK" value={project.metadata?.chain} />
             <Separator height={50} />
             <TagItem versionType="VERSION" value={`V${project.version}`} />
+            <Separator height={50} />
+            <TagItem versionType="PROJECT STATUS" value={projectStatus} />
           </VersionContainer>
         </ContentContainer>
       </LeftContainer>
       {!!actionItems && (
         <ActionContainer>
           {actionItems.map(({ title, action }) => (
-            <Button mt={10} key={title} width={230} title={title} onClick={action} />
+            <Button mt={10} key={title} width={250} title={title} onClick={action} />
           ))}
         </ActionContainer>
       )}
@@ -216,7 +218,7 @@ const VersionContainer = styled.div`
   justify-content: space-between;
   margin-top: 25px;
   height: 50px;
-  width: 300px;
+  width: 500px;
 `;
 
 const ActionContainer = styled.div`

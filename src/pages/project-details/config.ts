@@ -7,11 +7,11 @@ import { ClickAction, FormSubmit, ProjectAction } from 'utils/transactions';
 import prompts from './prompts';
 
 export enum ProjectStatus {
-  NotIndexing,
-  Started,
-  Indexing,
-  Ready,
-  Terminated,
+  NotIndexing = 'NOT INDEXING',
+  Started = 'STARTED',
+  Indexing = 'INDEXING',
+  Ready = 'READY',
+  Terminated = 'TERMINATED',
 }
 
 export type TransactionType =
@@ -56,9 +56,7 @@ export const createButtonItems = (onButtonClick: (type: ProjectAction) => void) 
   ],
   [ProjectStatus.Terminated]: [
     createButtonItem('Restart Indexing', () => onButtonClick(ProjectAction.RestartProject)),
-    createButtonItem('Announce Not Indexing', () =>
-      onButtonClick(ProjectAction.AnnounceNotIndexing)
-    ),
+    createButtonItem('Publish NotIndexing', () => onButtonClick(ProjectAction.AnnounceNotIndexing)),
   ],
 });
 
