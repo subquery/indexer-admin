@@ -39,7 +39,7 @@ const ProjectStatusView: FC<Props> = ({ status, metadata }) => (
     </LabelContainer>
     {!!metadata?.targetHeight && (
       <Container>
-        <TagItem versionType="Network Block" prefix="#" value={metadata.targetHeight} />
+        <TagItem versionType="Latest Block" prefix="#" value={metadata.targetHeight} />
         <TagItem versionType="Indexing Block" prefix="#" value={metadata.lastProcessedHeight} />
       </Container>
     )}

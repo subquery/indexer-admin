@@ -100,8 +100,9 @@ const ProjectDetailsHeader: FC<Props> = ({ id, status, project, service, stateCh
 
   const startProject = async (values: FormikValues, formHelper: FormikHelpers<FormikValues>) => {
     const networkEndpoint = values[ProjectFormKey.networkEndpoint];
+    const networkDictionary = values[ProjectFormKey.networkDictionary];
     try {
-      await startProjectRequest({ variables: { networkEndpoint, id } });
+      await startProjectRequest({ variables: { networkEndpoint, networkDictionary, id } });
       updateState();
       setCurrentStep(1);
     } catch (e) {
