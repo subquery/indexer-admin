@@ -8,7 +8,7 @@ import { dismiss, ProjectNotification } from 'utils/notification';
 import prompts from './prompts';
 import { ClickAction, FormSubmit, ProjectAction, ProjectConfig, ProjectStatus } from './types';
 
-type ButtonItem = {
+export type ButtonItem = {
   title: string;
   action: () => void;
   color?: string;

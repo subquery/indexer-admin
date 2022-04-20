@@ -6,19 +6,20 @@ import { ProgressBar, Spinner, Tag } from '@subql/react-ui';
 import { isUndefined } from 'lodash';
 import styled from 'styled-components';
 
-import { Text } from 'components/primary';
+import { Button, Text } from 'components/primary';
 import { TagItem } from 'components/tagItem';
 import { statusText } from 'pages/projects/constant';
 import { indexingStatusCode } from 'utils/project';
 
+import { ButtonItem } from '../config';
+import { ActionContainer, CardContainer } from '../styles';
 import { IndexingStatus, TQueryMetadata } from '../types';
 
-const Container = styled.div`
+const ContentContainer = styled.div`
   display: flex;
+  flex: 1;
   flex-direction: column;
-  border-radius: 8px;
-  padding: 32px;
-  background-color: white;
+  margin-right: 50px;
 `;
 
 const TagsContainer = styled.div<{ mb?: number }>`
@@ -34,35 +35,43 @@ const LabelContainer = styled.div`
 
 type Props = {
   percent: number;
+  actionItems: ButtonItem[];
   status?: IndexingStatus;
   metadata?: TQueryMetadata;
 };
 
-const ProjectStatusView: FC<Props> = ({ percent, status, metadata }) => (
-  <Container>
-    <LabelContainer>
-      <Text size={15} fw="500" mr={10}>
-        Indexing Status
-      </Text>
-      {!isUndefined(status) ? (
-        <Tag text={statusText[status]} state={indexingStatusCode(status)} />
-      ) : (
-        <Spinner />
+const ProjectStatusView: FC<Props> = ({ percent, actionItems, status, metadata }) => (
+  <CardContainer>
+    <ContentContainer>
+      <LabelContainer>
+        <Text size={15} fw="500" mr={10}>
+          Indexing Status
+        </Text>
+        {!isUndefined(status) ? (
+          <Tag text={statusText[status]} state={indexingStatusCode(status)} />
+        ) : (
+          <Spinner />
+        )}
+      </LabelContainer>
+      {!!metadata?.targetHeight && (
+        <TagsContainer>
+          <TagItem horizontal versionType="Latest Block" prefix="#" value={metadata.targetHeight} />
+          <TagItem
+            horizontal
+            versionType="Indexing Block"
+            prefix="#"
+            value={metadata.lastProcessedHeight}
+          />
+        </TagsContainer>
       )}
-    </LabelContainer>
-    {!!metadata?.targetHeight && (
-      <TagsContainer>
-        <TagItem horizontal versionType="Latest Block" prefix="#" value={metadata.targetHeight} />
-        <TagItem
-          horizontal
-          versionType="Indexing Block"
-          prefix="#"
-          value={metadata.lastProcessedHeight}
-        />
-      </TagsContainer>
-    )}
-    <ProgressBar progress={percent / 100} />
-  </Container>
+      <ProgressBar progress={percent / 100} />
+    </ContentContainer>
+    <ActionContainer>
+      {actionItems.map(({ title, action }) => (
+        <Button mt={10} key={title} width={265} title={title} onClick={action} />
+      ))}
+    </ActionContainer>
+  </CardContainer>
 );
 
 export default ProjectStatusView;
