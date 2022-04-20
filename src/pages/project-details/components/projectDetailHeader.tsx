@@ -201,9 +201,9 @@ const ProjectDetailsHeader: FC<Props> = ({ id, status, project, metadata, stateC
           </Text>
           <VersionContainer>
             <TagItem versionType="INDEXED NETWORK" value={project.metadata?.chain} />
-            <Separator height={50} />
+            <Separator height={30} />
             <TagItem versionType="VERSION" value={`V${project.version ?? '1.0.0'}`} />
-            <Separator height={50} />
+            <Separator height={30} />
             <TagItem versionType="PROJECT STATUS" value={projectStatus} />
           </VersionContainer>
         </ContentContainer>
@@ -255,9 +255,10 @@ const ContentContainer = styled.div`
 const VersionContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-top: 25px;
   height: 50px;
-  width: 500px;
+  width: 450px;
 `;
 
 const ActionContainer = styled.div`

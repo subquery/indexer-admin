@@ -15,7 +15,6 @@ import {
 import { useRouter } from 'hooks/routerHook';
 import { calculateProgress } from 'utils/project';
 
-import ProgressInfoView from './components/progressInfoView';
 import ProjectDetailsHeader from './components/projectDetailHeader';
 import ProjectServiceCard from './components/projectServiceCard';
 import ProjectStatusView from './components/projectStatusView';
@@ -65,8 +64,7 @@ const ProjectDetailsPage = () => {
             metadata={metadata}
             stateChanged={updateServiceStatus}
           />
-          <ProjectStatusView status={status} metadata={metadata} />
-          <ProgressInfoView percent={progress} />
+          <ProjectStatusView percent={progress} status={status} metadata={metadata} />
           <ProjectServiceCard id={id} data={metadata} />
           <ProjectTabbarView id={id} project={projectInfo} />
         </ContentContainer>
