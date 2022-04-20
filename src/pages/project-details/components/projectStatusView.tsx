@@ -31,6 +31,7 @@ const TagsContainer = styled.div<{ mb?: number }>`
 const LabelContainer = styled.div`
   display: flex;
   align-items: center;
+  margin-bottom: 15px;
 `;
 
 type Props = {

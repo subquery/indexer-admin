@@ -33,11 +33,12 @@ import ProjectTabbarView from './components/projectTabBarView';
 import {
   aletMessages,
   createAnnounceIndexingSteps,
-  createButtonItems,
+  createNetworkButtonItems,
   createNotIndexingSteps,
   createReadyIndexingSteps,
   createRemoveProjectSteps,
   createRestartProjectSteps,
+  createServiceButtonItems,
   createStartIndexingSteps,
   createStopIndexingSteps,
   createStopProjectSteps,
@@ -56,13 +57,6 @@ const ProjectDetailsPage = () => {
   const { setPageLoading } = useLoading();
   useRouter(!projectDetails);
 
-  const [progress, setProgress] = useState(0);
-  const [metadata, setMetadata] = useState<TQueryMetadata>();
-
-  const [visible, setVisible] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [actionType, setActionType] = useState<ProjectAction>();
-
   const indexingAction = useIndexingAction(id);
   const projectService = useProjectService(id);
   const { dispatchNotification } = useNotification();
@@ -70,6 +64,12 @@ const ProjectDetailsPage = () => {
   const [stopProjectRequest, { loading: stopProjectLoading }] = useMutation(STOP_PROJECT);
   const [removeProjectRequest, { loading: removeProjectLoading }] = useMutation(REMOVE_PROJECT);
   const history = useHistory();
+
+  const [progress, setProgress] = useState(0);
+  const [metadata, setMetadata] = useState<TQueryMetadata>();
+  const [visible, setVisible] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [actionType, setActionType] = useState<ProjectAction>();
 
   const fetchQueryMetadata = async () => {
     const data = await getQueryMetadata(id);
@@ -118,20 +118,25 @@ const ProjectDetailsPage = () => {
   );
 
   // TODO: create button items for each one
-  const buttonItems = createButtonItems((type: ProjectAction) => {
+  const networkBtnItems = createNetworkButtonItems((type: ProjectAction) => {
     setActionType(type);
     setVisible(true);
   });
 
-  const actionItems = useMemo(() => {
+  const serviceBtnItems = createServiceButtonItems((type: ProjectAction) => {
+    setActionType(type);
+    setVisible(true);
+  });
+
+  const networkActionItems = useMemo(() => {
     if (isUndefined(projectStatus)) return [];
-    return buttonItems[projectStatus];
+    return networkBtnItems[projectStatus];
   }, [projectStatus]);
 
-  const [modalTitle, modalSteps] = useMemo(() => {
-    if (!actionType) return ['', []];
-    return [ProjectActionName[actionType], steps[actionType]];
-  }, [actionType]);
+  const serviceActionItems = useMemo(() => {
+    if (isUndefined(projectStatus)) return [];
+    return serviceBtnItems[projectStatus];
+  }, [projectStatus]);
 
   const onModalClose = (error?: any) => {
     setVisible(false);
@@ -158,6 +163,7 @@ const ProjectDetailsPage = () => {
   ) => {
     const notification = notifications[type];
     dispatchNotification(notification);
+    updateServiceStatus();
   };
 
   const startProject = async (values: FormikValues, formHelper: FormikHelpers<FormikValues>) => {
@@ -219,6 +225,11 @@ const ProjectDetailsPage = () => {
     ...announceNotIndexingSteps,
   };
 
+  const [modalTitle, modalSteps] = useMemo(() => {
+    if (!actionType) return ['', []];
+    return [ProjectActionName[actionType], steps[actionType]];
+  }, [actionType]);
+
   return (
     <Container>
       {projectInfo && (
@@ -226,11 +237,11 @@ const ProjectDetailsPage = () => {
           <ProjectDetailsHeader id={id} projectStatus={projectStatus} project={projectInfo} />
           <ProjectStatusView
             percent={progress}
-            actionItems={actionItems}
+            actionItems={networkActionItems}
             status={status}
             metadata={metadata}
           />
-          <ProjectServiceCard id={id} actionItems={actionItems} data={metadata} />
+          <ProjectServiceCard id={id} actionItems={serviceActionItems} data={metadata} />
           <ProjectTabbarView id={id} project={projectInfo} />
         </ContentContainer>
       )}

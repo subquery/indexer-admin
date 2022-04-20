@@ -10,6 +10,7 @@ const VersionItemContainer = styled.div<{ horizontal: boolean }>`
   display: flex;
   flex-direction: ${({ horizontal }) => (horizontal ? 'row' : 'column')};
   justify-content: ${({ horizontal }) => (horizontal ? 'center' : 'flex-start')};
+  align-items: ${({ horizontal }) => (horizontal ? 'center' : 'flex-start')};
 `;
 
 type VersionProps = {
@@ -25,18 +26,19 @@ export const TagItem: FC<VersionProps> = ({
   value = '',
   prefix = '',
 }) => {
-  const color = prefix ? '#4388dd' : 'gray';
+  const mainColor = horizontal ? 'gray' : 'black';
+  const subColor = prefix ? '#4388dd' : 'gray';
   return (
     <VersionItemContainer horizontal={horizontal}>
-      <Text size={15} fw="500">
+      <Text color={mainColor} size={horizontal ? 13 : 15} fw="500">
         {versionType}
       </Text>
       {horizontal ? (
-        <Text ml={15} mr={15} color={color} fw="500" size={15}>
+        <Text ml={15} mr={15} color={subColor} fw="500" size={15}>
           {`${prefix}${value}`}
         </Text>
       ) : (
-        <Text mt={5} color={color} fw="500" size={13}>
+        <Text mt={5} color={subColor} fw="500" size={13}>
           {`${prefix}${value}`}
         </Text>
       )}
