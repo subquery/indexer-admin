@@ -15,8 +15,10 @@ import {
   getQueryMetadata,
   ProjectDetails,
   useIndexingStatus,
+  useNodeVersions,
   useProjectDetails,
   useProjectService,
+  useQueryVersions,
 } from 'hooks/projectHook';
 import { useRouter } from 'hooks/routerHook';
 import { useIndexingAction } from 'hooks/transactionHook';
@@ -55,6 +57,7 @@ const ProjectDetailsPage = () => {
   const status = useIndexingStatus(id);
   const projectInfo = useProjectDetails(id);
   const { setPageLoading } = useLoading();
+  const history = useHistory();
   useRouter(!projectDetails);
 
   const indexingAction = useIndexingAction(id);
@@ -63,7 +66,8 @@ const ProjectDetailsPage = () => {
   const [startProjectRequest, { loading: startProjectLoading }] = useMutation(START_PROJECT);
   const [stopProjectRequest, { loading: stopProjectLoading }] = useMutation(STOP_PROJECT);
   const [removeProjectRequest, { loading: removeProjectLoading }] = useMutation(REMOVE_PROJECT);
-  const history = useHistory();
+  const queryVersions = useQueryVersions(id);
+  const nodeVersions = useNodeVersions(id);
 
   const [progress, setProgress] = useState(0);
   const [metadata, setMetadata] = useState<TQueryMetadata>();
@@ -117,7 +121,6 @@ const ProjectDetailsPage = () => {
     [projectStatus]
   );
 
-  // TODO: create button items for each one
   const networkBtnItems = createNetworkButtonItems((type: ProjectAction) => {
     setActionType(type);
     setVisible(true);
@@ -156,6 +159,11 @@ const ProjectDetailsPage = () => {
       poiEnabled: projectService?.poiEnabled ?? false,
     }),
     [projectService]
+  );
+
+  const imageVersions = useMemo(
+    () => ({ query: queryVersions, node: nodeVersions }),
+    [nodeVersions, queryVersions]
   );
 
   const projectStateChange = (
@@ -197,11 +205,11 @@ const ProjectDetailsPage = () => {
     }
   };
 
-  const startIndexingSteps = createStartIndexingSteps(projectConfig, startProject);
+  const startIndexingSteps = createStartIndexingSteps(projectConfig, imageVersions, startProject);
   const stopIndexingSteps = createStopIndexingSteps(stopProject, () =>
     indexingAction(ProjectAction.AnnounceNotIndexing, onModalClose)
   );
-  const restartProjectSteps = createRestartProjectSteps(projectConfig, startProject);
+  const restartProjectSteps = createRestartProjectSteps(projectConfig, imageVersions, startProject);
   const stopProjectSteps = createStopProjectSteps(stopProject);
   const removeProjectSteps = createRemoveProjectSteps(removeProject);
   const announceIndexingSteps = createAnnounceIndexingSteps(() =>

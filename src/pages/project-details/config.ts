@@ -1,6 +1,8 @@
 // Copyright 2020-2022 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { isEmpty } from 'lodash';
+
 import { Notification } from 'containers/notificationContext';
 import { initialIndexingValues, ProjectFormKey, StartIndexingSchema } from 'types/schemas';
 import { dismiss, ProjectNotification } from 'utils/notification';
@@ -73,7 +75,19 @@ export const ProjectActionName = {
   [ProjectAction.StopIndexing]: 'Stop Indexing',
 };
 
-const startProjectForms = (config: ProjectConfig, onFormSubmit: FormSubmit) => ({
+export type ImageVersions = {
+  node: string[];
+  query: string[];
+};
+
+const defaultNodeVersions = ['v0.31.1', 'v0.32.0', 'v0.32.1-1', 'v0.33.0'];
+const defaultQueryVersions = ['v0.12.0', 'v0.13.0', 'v0.14.0', 'v0.14.1'];
+
+const startProjectForms = (
+  config: ProjectConfig,
+  versions: ImageVersions,
+  onFormSubmit: FormSubmit
+) => ({
   formValues: initialIndexingValues(config),
   schema: StartIndexingSchema,
   onFormSubmit,
@@ -91,14 +105,12 @@ const startProjectForms = (config: ProjectConfig, onFormSubmit: FormSubmit) => (
     {
       formKey: ProjectFormKey.nodeVersion,
       title: 'Node Image Version',
-      // FIXME: the options should get from project manifest
-      options: ['v0.31.1', 'v0.32.0', 'v0.32.1-1', 'v0.33.0'],
+      options: !isEmpty(versions.node) ? versions.node : defaultNodeVersions,
     },
     {
       formKey: ProjectFormKey.queryVersion,
       title: 'Query Image Version',
-      // FIXME: the options should get from project manifest
-      options: ['v0.12.0', 'v0.13.0', 'v0.14.0', 'v0.14.1'],
+      options: !isEmpty(versions.query) ? versions.query : defaultQueryVersions,
     },
     {
       formKey: ProjectFormKey.poiEnabled,
@@ -108,27 +120,35 @@ const startProjectForms = (config: ProjectConfig, onFormSubmit: FormSubmit) => (
   ],
 });
 
-export const createStartIndexingSteps = (config: ProjectConfig, onStartProject: FormSubmit) => ({
+export const createStartIndexingSteps = (
+  config: ProjectConfig,
+  versions: ImageVersions,
+  onStartProject: FormSubmit
+) => ({
   [ProjectAction.StartIndexing]: [
     {
       index: 0,
       title: prompts.startProject.title,
       desc: prompts.startProject.desc,
       buttonTitle: 'Confirm',
-      form: startProjectForms(config, onStartProject),
+      form: startProjectForms(config, versions, onStartProject),
       onClick: onStartProject,
     },
   ],
 });
 
-export const createRestartProjectSteps = (config: ProjectConfig, onStartProject: FormSubmit) => ({
+export const createRestartProjectSteps = (
+  config: ProjectConfig,
+  versions: ImageVersions,
+  onStartProject: FormSubmit
+) => ({
   [ProjectAction.RestartProject]: [
     {
       index: 0,
       title: prompts.restartProject.title,
       desc: prompts.restartProject.desc,
       buttonTitle: 'Confirm',
-      form: startProjectForms(config, onStartProject),
+      form: startProjectForms(config, versions, onStartProject),
     },
   ],
 });

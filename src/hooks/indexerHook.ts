@@ -10,7 +10,7 @@ import { useWeb3 } from 'hooks/web3Hook';
 import { Account, IndexerMetadata } from 'pages/account/types';
 import { HookDependency } from 'types/types';
 import { emptyControllerAccount } from 'utils/indexerActions';
-import { bytes32ToCid, getMetadata } from 'utils/ipfs';
+import { bytes32ToCid, cat } from 'utils/ipfs';
 
 // indexer save inside coordinator service
 export const useIsCoordinatorIndexer = (): boolean => {
@@ -161,7 +161,7 @@ export const useIndexerMetadata = () => {
       const metadataHash = await sdk?.indexerRegistry.metadataByIndexer(account);
       if (!metadataHash) return;
 
-      const metadata = await getMetadata(bytes32ToCid(metadataHash));
+      const metadata = await cat(bytes32ToCid(metadataHash));
       setMetadata(metadata);
     } catch {
       console.error('Failed to get indexer metadata');
