@@ -119,6 +119,7 @@ const RegisterPage = () => {
 
       const isValidProxyEndpoint = await verifyProxyEndpoint(proxyEndpoint);
       if (!isValidProxyEndpoint) {
+        setLoading(false);
         helper.setErrors({ [RegisterFormKey.proxyEndpoint]: 'Invalid proxy endpoint' });
         return;
       }

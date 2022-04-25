@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /* eslint-disable */
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { isValidPrivate, bufferToHex, privateToAddress as privateToAddressBuffer, toBuffer } from 'ethereumjs-util';
 import { isUndefined } from 'lodash';
 
@@ -53,10 +53,15 @@ export function validateController(key: string, isExist?: boolean, account?: str
 }
 
 export async function verifyProxyEndpoint(url: string) {
-  const { hostname } = new URL(url);
-  const cid = 'QmTQTnBTcvv3Eb3M6neDiwuubWVDAoqyAgKmXtTtJKAHoH';
-  const requestUrl = `${hostname}/metadata/${cid}`;
+  try {
+    const { host, protocol } = new URL(url);
+    const cid = 'QmTQTnBTcvv3Eb3M6neDiwuubWVDAoqyAgKmXtTtJKAHoH';
+    const requestUrl = `${protocol}//${host}/metadata/${cid}`;
 
-  const result = await axios.get(requestUrl);
-  return result.status !== 404;
+    const result = await axios.get(requestUrl);
+    return !!result;
+  } catch (error) {
+    const e = error as AxiosError;
+    return e.response?.status === 400;
+  }
 }
