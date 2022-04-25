@@ -107,17 +107,25 @@ export const useControllerToIndexer = (account: Account) => {
 };
 
 export const useTokenBalance = (account: Account, deps?: HookDependency) => {
-  const [balance, setBalance] = useState('0.00');
+  const [tokenBalance, setBalance] = useState('0.00');
   const sdk = useContractSDK();
 
-  useEffect(() => {
-    account &&
-      sdk?.sqToken.balanceOf(account).then((value) => {
-        setBalance(Number(formatUnits(value, 18)).toFixed(2));
-      });
-  }, [account, sdk, deps]);
+  const getTokenBalance = useCallback(async () => {
+    if (!sdk || !account) return;
+    try {
+      const value = await sdk.sqToken.balanceOf(account);
+      const balance = Number(formatUnits(value, 18)).toFixed(2);
+      setBalance(balance);
+    } catch (e) {
+      console.error('Get token balance failed for:', account);
+    }
+  }, [account, sdk]);
 
-  return balance;
+  useEffect(() => {
+    getTokenBalance();
+  }, [getTokenBalance, deps]);
+
+  return { tokenBalance, getTokenBalance };
 };
 
 export const useBalance = (account: Account) => {
