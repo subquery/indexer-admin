@@ -251,6 +251,9 @@ export const getManifest = async (cid: string) => {
 };
 
 // get image versions
+const defaultNodeVersions = ['v0.33.0', 'v0.32.0', 'v0.31.1'];
+const defaultQueryVersions = ['v0.14.1', 'v0.14.0', 'v0.13.0', 'v0.12.0'];
+
 export const useNodeVersions = (cid: string) => {
   const [getNodeVersions, { data }] = useLazyQuery(GET_REGISTRY_VERSIONS);
 
@@ -264,7 +267,8 @@ export const useNodeVersions = (cid: string) => {
     fetchNodeVersions();
   }, [fetchNodeVersions]);
 
-  return data?.getRegistryVersions;
+  const versions = data?.getRegistryVersions;
+  return !isEmpty(versions) ? versions : defaultNodeVersions;
 };
 
 export const useQueryVersions = (cid: string) => {
@@ -280,5 +284,6 @@ export const useQueryVersions = (cid: string) => {
     fetchQueryVersions();
   }, [fetchQueryVersions]);
 
-  return data?.getRegistryVersions;
+  const versions = data?.getRegistryVersions;
+  return !isEmpty(versions) ? versions : defaultQueryVersions;
 };

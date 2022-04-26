@@ -1,8 +1,6 @@
 // Copyright 2020-2022 SubQuery Pte Ltd authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { isEmpty } from 'lodash';
-
 import { Notification } from 'containers/notificationContext';
 import { initialIndexingValues, ProjectFormKey, StartIndexingSchema } from 'types/schemas';
 import { dismiss, ProjectNotification } from 'utils/notification';
@@ -80,9 +78,6 @@ export type ImageVersions = {
   query: string[];
 };
 
-const defaultNodeVersions = ['v0.31.1', 'v0.32.0', 'v0.32.1-1', 'v0.33.0'];
-const defaultQueryVersions = ['v0.12.0', 'v0.13.0', 'v0.14.0', 'v0.14.1'];
-
 const startProjectForms = (
   config: ProjectConfig,
   versions: ImageVersions,
@@ -105,12 +100,12 @@ const startProjectForms = (
     {
       formKey: ProjectFormKey.nodeVersion,
       title: 'Node Image Version',
-      options: !isEmpty(versions.node) ? versions.node : defaultNodeVersions,
+      options: versions.node,
     },
     {
       formKey: ProjectFormKey.queryVersion,
       title: 'Query Image Version',
-      options: !isEmpty(versions.query) ? versions.query : defaultQueryVersions,
+      options: versions.query,
     },
     {
       formKey: ProjectFormKey.poiEnabled,

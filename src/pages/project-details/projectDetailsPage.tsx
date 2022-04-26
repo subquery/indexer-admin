@@ -154,11 +154,11 @@ const ProjectDetailsPage = () => {
     () => ({
       networkEndpoint: projectService?.networkEndpoint ?? '',
       networkDictionary: projectService?.networkDictionary ?? '',
-      nodeVersion: projectService?.nodeVersion ?? '',
-      queryVersion: projectService?.queryVersion ?? '',
+      nodeVersion: projectService?.nodeVersion ?? nodeVersions[1],
+      queryVersion: projectService?.queryVersion ?? queryVersions[1],
       poiEnabled: projectService?.poiEnabled ?? false,
     }),
-    [projectService]
+    [projectService, nodeVersions, queryVersions]
   );
 
   const imageVersions = useMemo(
@@ -205,11 +205,18 @@ const ProjectDetailsPage = () => {
     }
   };
 
-  const startIndexingSteps = createStartIndexingSteps(projectConfig, imageVersions, startProject);
+  const startIndexingSteps = useMemo(
+    () => createStartIndexingSteps(projectConfig, imageVersions, startProject),
+    [projectConfig]
+  );
+  const restartProjectSteps = useMemo(
+    () => createRestartProjectSteps(projectConfig, imageVersions, startProject),
+    [projectConfig]
+  );
   const stopIndexingSteps = createStopIndexingSteps(stopProject, () =>
     indexingAction(ProjectAction.AnnounceNotIndexing, onModalClose)
   );
-  const restartProjectSteps = createRestartProjectSteps(projectConfig, imageVersions, startProject);
+
   const stopProjectSteps = createStopProjectSteps(stopProject);
   const removeProjectSteps = createRemoveProjectSteps(removeProject);
   const announceIndexingSteps = createAnnounceIndexingSteps(() =>
@@ -222,21 +229,24 @@ const ProjectDetailsPage = () => {
     indexingAction(ProjectAction.AnnounceNotIndexing, onModalClose)
   );
 
-  const steps = {
-    ...startIndexingSteps,
-    ...restartProjectSteps,
-    ...stopIndexingSteps,
-    ...stopProjectSteps,
-    ...removeProjectSteps,
-    ...announceIndexingSteps,
-    ...announceReadySteps,
-    ...announceNotIndexingSteps,
-  };
+  const steps = useMemo(
+    () => ({
+      ...startIndexingSteps,
+      ...restartProjectSteps,
+      ...stopIndexingSteps,
+      ...stopProjectSteps,
+      ...removeProjectSteps,
+      ...announceIndexingSteps,
+      ...announceReadySteps,
+      ...announceNotIndexingSteps,
+    }),
+    [projectConfig]
+  );
 
   const [modalTitle, modalSteps] = useMemo(() => {
     if (!actionType) return ['', []];
     return [ProjectActionName[actionType], steps[actionType]];
-  }, [actionType]);
+  }, [actionType, projectConfig]);
 
   return (
     <Container>
