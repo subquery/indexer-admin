@@ -234,7 +234,7 @@ export const notifications: Record<string, Notification> = {
   [ProjectNotification.Started]: {
     type: 'success',
     title: 'Project is starting',
-    message: `Starting project may take around 5 senconds`,
+    message: `Starting project may take around 5 seconds`,
     dismiss: dismiss(),
   },
   [ProjectNotification.Terminated]: {
