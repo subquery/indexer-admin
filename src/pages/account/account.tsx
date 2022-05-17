@@ -62,9 +62,11 @@ const Registry = () => {
   const { setPageLoading } = useLoading();
   const history = useHistory();
 
-  prompts.controller.desc = `Balance ${controllerBalance} DEV`;
-  const controllerItem = !controller ? prompts.emptyController : prompts.controller;
   const indexerItem = prompts.indexer;
+  const controllerItem = useMemo(() => {
+    prompts.controller.desc = `Balance: ${controllerBalance} DEV`;
+    return !controller ? prompts.emptyController : prompts.controller;
+  }, [controller, controllerBalance]);
 
   useEffect(() => {
     setPageLoading(isUndefined(account) || isUndefined(indexer));
@@ -154,7 +156,6 @@ const Registry = () => {
           name={indexerName}
           buttons={indexerButtons}
           account={account ?? ''}
-          status="active"
           desc={`Balance: ${indexerBalance} DEV`}
         />
       )}
