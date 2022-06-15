@@ -30,7 +30,8 @@ export type TransactionType =
 export enum AccountAction {
   unregister = 'unregister',
   updateMetaData = 'updateMetadata',
-  configCntroller = 'configCntroller',
+  configController = 'configController',
+  withdrawController = 'withdrawController',
 }
 
 export enum ProjectsAction {

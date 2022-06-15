@@ -3,12 +3,11 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router';
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { isUndefined } from 'lodash';
 
 import AccountCard from 'components/accountCard';
 import ModalView from 'components/modalView';
-import { useContractSDK } from 'containers/contractSdk';
 import { useCoordinatorIndexer } from 'containers/coordinatorIndexer';
 import { useLoading } from 'containers/loadingContext';
 import { useNotification } from 'containers/notificationContext';
@@ -22,20 +21,20 @@ import {
 import { useAccountAction } from 'hooks/transactionHook';
 import { useIsMetaMask, useWeb3 } from 'hooks/web3Hook';
 import { AccountAction } from 'pages/project-details/types';
-import { ControllerFormKey, MetadataFormKey } from 'types/schemas';
+import { MetadataFormKey } from 'types/schemas';
 import { balanceSufficient } from 'utils/account';
 import { createIndexerMetadata } from 'utils/ipfs';
-import { REMOVE_ACCOUNTS, UPDAET_CONTROLLER } from 'utils/queries';
-import { privateToAddress, validateController } from 'utils/validateService';
+import { REMOVE_ACCOUNTS, UPDAET_CONTROLLER, WITHDRAW_CONTROLLER } from 'utils/queries';
 
 import {
   AccountActionName,
-  configControllerFailed,
-  configControllerSucceed,
   createButonItem,
-  createControllerSteps,
+  createConfigControllerSteps,
   createUnregisterSteps,
   createUpdateMetadataSteps,
+  createWithdrawSteps,
+  withdrawControllerFailed,
+  withdrawControllerSucceed,
 } from './config';
 import prompts, { notifications } from './prompts';
 import { Container } from './styles';
@@ -43,11 +42,10 @@ import { Container } from './styles';
 const Registry = () => {
   const [visible, setVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [inputController, setController] = useState('');
+  const [createdController, setController] = useState('');
   const [actionType, setActionType] = useState<AccountAction>();
 
   const { account } = useWeb3();
-  const sdk = useContractSDK();
   const isIndexer = useIsIndexer();
   const { indexer } = useCoordinatorIndexer();
   const { metadata, fetchMetadata } = useIndexerMetadata();
@@ -58,10 +56,14 @@ const Registry = () => {
   const controllerBalance = useBalance(controller);
   const indexerBalance = useBalance(account);
   const { dispatchNotification } = useNotification();
-  const [updateController] = useMutation(UPDAET_CONTROLLER);
-  const [removeAccounts] = useMutation(REMOVE_ACCOUNTS);
   const { setPageLoading } = useLoading();
   const history = useHistory();
+
+  const [updateController] = useMutation(UPDAET_CONTROLLER);
+  const [removeAccounts] = useMutation(REMOVE_ACCOUNTS);
+  const [withdrawController, { data, loading }] = useLazyQuery(WITHDRAW_CONTROLLER, {
+    fetchPolicy: 'network-only',
+  });
 
   prompts.controller.desc = `Balance: ${controllerBalance} ACALA`;
   const controllerItem = !controller ? prompts.emptyController : prompts.controller;
@@ -94,38 +96,33 @@ const Registry = () => {
     createButonItem(AccountAction.unregister, onButtonPress),
   ];
 
-  const controllerButtons = [createButonItem(AccountAction.configCntroller, onButtonPress)];
+  const controllerButtons = [
+    createButonItem(AccountAction.configController, onButtonPress),
+    createButonItem(AccountAction.withdrawController, onButtonPress),
+  ];
 
-  const controllerSteps = createControllerSteps(
-    async (values, formHelper) => {
-      formHelper.setStatus({ loading: true });
-      const privateKey = values[ControllerFormKey.privateKey];
-      const controllerAddress = privateToAddress(privateKey);
-      const indexerController = await sdk?.indexerRegistry.indexerToController(account ?? '');
-      const isExist =
-        !!controllerAddress && (await sdk?.indexerRegistry.isController(controllerAddress));
-
-      const error = validateController(privateKey, isExist, account ?? '', indexerController);
-      if (error) {
-        formHelper.setStatus({ loading: false });
-        formHelper.setErrors({ [ControllerFormKey.privateKey]: error });
-        return;
-      }
-
-      setController(controllerAddress);
-
-      try {
-        await updateController({ variables: { controller: privateKey } });
-        dispatchNotification(configControllerSucceed(controllerAddress));
-        setCurrentStep(1);
-      } catch {
-        onModalClose();
-        dispatchNotification(configControllerFailed(controllerAddress));
-      }
-      formHelper.setStatus({ loading: false });
+  const controllerSteps = createConfigControllerSteps(
+    createdController,
+    async () => {
+      const res = await updateController();
+      const createdAccount = res.data.updateController;
+      setController(createdAccount);
+      setCurrentStep(1);
     },
-    () => accountAction(AccountAction.configCntroller, inputController, onModalClose, getController)
+    () =>
+      accountAction(AccountAction.configController, createdController, onModalClose, getController)
   );
+
+  const withdrawStep = createWithdrawSteps(async () => {
+    const res = await withdrawController();
+    onModalClose();
+
+    if (res.data.withdrawController) {
+      dispatchNotification(withdrawControllerSucceed(controller));
+    } else {
+      dispatchNotification(withdrawControllerFailed(controller));
+    }
+  });
 
   const updateMetadataStep = useMemo(
     () =>
@@ -149,8 +146,8 @@ const Registry = () => {
   );
 
   const steps = useMemo(
-    () => ({ ...controllerSteps, ...unregisterStep, ...updateMetadataStep }),
-    [metadata, inputController]
+    () => ({ ...controllerSteps, ...withdrawStep, ...unregisterStep, ...updateMetadataStep }),
+    [metadata, createdController]
   );
 
   return (
@@ -178,6 +175,7 @@ const Registry = () => {
           visible={visible}
           title={AccountActionName[actionType]}
           onClose={onModalClose}
+          loading={loading}
           steps={steps[actionType]}
           currentStep={currentStep}
           type={actionType}

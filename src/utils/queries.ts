@@ -70,11 +70,14 @@ export const STOP_PROJECT = gql`
 `;
 
 export const UPDAET_CONTROLLER = gql`
-  mutation UpdateController($controller: String!) {
-    updateController(controller: $controller) {
-      indexer
-      controller
-    }
+  mutation UpdateController {
+    updateController
+  }
+`;
+
+export const WITHDRAW_CONTROLLER = gql`
+  query WithdrawController {
+    withrawController
   }
 `;
 
