@@ -170,6 +170,18 @@ export const GET_QUERY_METADATA = gql`
 `;
 
 // query project registry
+export const GET_INDEXER_PROJECTS = gql`
+  query GetIndexerProjects($indexer: String!) {
+    deploymentIndexers(filter: { indexerId: { equalTo: $indexer } }) {
+      nodes {
+        indexerId
+        deploymentId
+        status
+      }
+    }
+  }
+`;
+
 export const GET_PROJECT_DETAILS = gql`
   query GetProjectDetails($deploymentId: String!) {
     deployments(filter: { id: { equalTo: $deploymentId } }) {
