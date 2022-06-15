@@ -187,7 +187,9 @@ export const getIndexingProjects = async (indexer: string): Promise<ProjectServi
   });
 
   const projects = res.data.deploymentIndexers.nodes;
-  return projects.map((p) => ({ ...projectServiceMetadtaValue, id: p.deploymentId }));
+  return projects
+    .filter((p) => p.status !== 'TERMINATED')
+    .map((p) => ({ ...projectServiceMetadtaValue, id: p.deploymentId }));
 };
 
 export const useProjectDetails = (deploymentId: string): ProjectDetails | undefined => {
