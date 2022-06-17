@@ -13,6 +13,7 @@ import { createContainer } from './unstated';
 
 const deployments: Record<SubqueryNetwork, ContractDeployment> = {
   local: testnetDeployment,
+  hardhat: testnetDeployment,
   testnet: testnetDeployment,
   mainnet: testnetDeployment,
 };
@@ -26,6 +27,7 @@ function createContractOptions(network: SubqueryNetwork): SdkOptions {
 
 const options = {
   [ChainID.local]: createContractOptions(Networks.local),
+  [ChainID.hardhat]: createContractOptions(Networks.hardhat),
   [ChainID.testnet]: createContractOptions(Networks.testnet),
   [ChainID.mainnet]: createContractOptions(Networks.mainnet),
 };
