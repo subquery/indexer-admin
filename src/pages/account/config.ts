@@ -11,8 +11,7 @@ import { IndexerMetadata } from './types';
 const buttonTitles = {
   [AccountAction.unregister]: 'Unregister',
   [AccountAction.updateMetaData]: 'Update Metadata',
-  [AccountAction.configController]: 'Config Controller',
-  [AccountAction.withdrawController]: 'Withdraw Assets',
+  [AccountAction.configController]: 'Manage Controllers',
 };
 
 export const createButonItem = (
@@ -30,7 +29,6 @@ export const AccountActionName = {
   [AccountAction.updateMetaData]: 'Update Indexer Metadata',
   [AccountAction.unregister]: 'Unregister Indexer Account',
   [AccountAction.configController]: 'Config Controller Account',
-  [AccountAction.withdrawController]: 'Controller Assets withdrawal',
 };
 
 export const createConfigControllerSteps = (
@@ -56,17 +54,17 @@ export const createConfigControllerSteps = (
   ],
 });
 
-export const createWithdrawSteps = (withdraw: ClickAction) => ({
-  [AccountAction.withdrawController]: [
-    {
-      index: 0,
-      title: 'Controller Withdraw',
-      desc: `Withdraw all the assets from controller account will transfer all the asset of the controller to indexer account.`,
-      buttonTitle: 'Withdraw',
-      onClick: withdraw,
-    },
-  ],
-});
+// export const createWithdrawSteps = (withdraw: ClickAction) => ({
+//   [AccountAction.withdrawController]: [
+//     {
+//       index: 0,
+//       title: 'Controller Withdraw',
+//       desc: `Withdraw all the assets from controller account will transfer all the asset of the controller to indexer account.`,
+//       buttonTitle: 'Withdraw',
+//       onClick: withdraw,
+//     },
+//   ],
+// });
 
 export const createUnregisterSteps = (onUnregister: ClickAction) => ({
   [AccountAction.unregister]: [

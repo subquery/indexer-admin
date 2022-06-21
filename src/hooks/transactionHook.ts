@@ -32,8 +32,6 @@ export const useAccountAction = () => {
       [AccountAction.updateMetaData]: () => updateMetadata(sdk, signer, param),
       [AccountAction.configController]: () => configController(sdk, signer, param),
       [AccountAction.unregister]: () => unRegister(sdk, signer),
-      // FIXME: remove this empty action
-      [AccountAction.withdrawController]: () => unRegister(sdk, signer),
     }),
     [sdk, signer]
   );

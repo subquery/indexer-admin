@@ -86,7 +86,7 @@ export const ADD_CONTROLLER = gql`
 
 export const REMOVE_CONTROLLER = gql`
   mutation RemoveController($id: String!) {
-    removeController(id: $id) {
+    removeAccount(id: $id) {
       id
     }
   }

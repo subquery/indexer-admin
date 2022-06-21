@@ -5,13 +5,17 @@ import { useEffect } from 'react';
 import { useLazyQuery, useMutation } from '@apollo/client';
 
 import { Button, Text } from 'components/primary';
-import { ADD_CONTROLLER, GET_CONTROLLERS } from 'utils/queries';
+import { useController } from 'hooks/indexerHook';
+import { ADD_CONTROLLER, GET_CONTROLLERS, REMOVE_CONTROLLER } from 'utils/queries';
 
 import ControllerItem from './controllerItem';
 import { Container, ContentContainer, HeaderContainer } from './styles';
 import { Controller } from './types';
 
 const controllersPage = () => {
+  const { controller } = useController();
+
+  const [removeController] = useMutation(REMOVE_CONTROLLER);
   const [addController, { loading: addingController }] = useMutation(ADD_CONTROLLER);
   const [getControllers, { data: controllers }] = useLazyQuery<{ controllers: Controller[] }>(
     GET_CONTROLLERS,
@@ -49,7 +53,14 @@ const controllersPage = () => {
       <ContentContainer mt={50}>
         {!!controllers &&
           controllers.controllers.map((item, index) => (
-            <ControllerItem key={item.id} index={index} {...item} />
+            <ControllerItem
+              key={item.id}
+              controller={controller}
+              name={`Account ${index + 1}`}
+              onRemoveController={(id) => removeController({ variables: { id } })}
+              onWithdraw={() => console.log('')}
+              {...item}
+            />
           ))}
       </ContentContainer>
     </Container>

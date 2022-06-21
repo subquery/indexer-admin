@@ -31,7 +31,6 @@ export enum AccountAction {
   unregister = 'unregister',
   updateMetaData = 'updateMetadata',
   configController = 'configController',
-  withdrawController = 'withdrawController',
 }
 
 export enum ProjectsAction {

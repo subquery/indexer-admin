@@ -3,7 +3,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router';
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { isUndefined } from 'lodash';
 
 import AccountCard from 'components/accountCard';
@@ -24,7 +24,7 @@ import { AccountAction } from 'pages/project-details/types';
 import { MetadataFormKey } from 'types/schemas';
 import { balanceSufficient } from 'utils/account';
 import { createIndexerMetadata } from 'utils/ipfs';
-import { ADD_CONTROLLER, REMOVE_ACCOUNTS, WITHDRAW_CONTROLLER } from 'utils/queries';
+import { ADD_CONTROLLER, REMOVE_ACCOUNTS } from 'utils/queries';
 
 import {
   AccountActionName,
@@ -32,9 +32,6 @@ import {
   createConfigControllerSteps,
   createUnregisterSteps,
   createUpdateMetadataSteps,
-  createWithdrawSteps,
-  withdrawControllerFailed,
-  withdrawControllerSucceed,
 } from './config';
 import prompts, { notifications } from './prompts';
 import { Container } from './styles';
@@ -61,9 +58,9 @@ const Account = () => {
 
   const [updateController] = useMutation(ADD_CONTROLLER);
   const [removeAccounts] = useMutation(REMOVE_ACCOUNTS);
-  const [withdrawController, { data, loading }] = useLazyQuery(WITHDRAW_CONTROLLER, {
-    fetchPolicy: 'network-only',
-  });
+  // const [withdrawController, { data, loading }] = useLazyQuery(WITHDRAW_CONTROLLER, {
+  //   fetchPolicy: 'network-only',
+  // });
 
   prompts.controller.desc = `Balance: ${controllerBalance} ACALA`;
   const controllerItem = !controller ? prompts.emptyController : prompts.controller;
@@ -97,8 +94,7 @@ const Account = () => {
   ];
 
   const controllerButtons = [
-    createButonItem(AccountAction.configController, onButtonPress),
-    createButonItem(AccountAction.withdrawController, onButtonPress),
+    createButonItem(AccountAction.configController, () => history.push('/controller-management')),
   ];
 
   const controllerSteps = createConfigControllerSteps(
@@ -113,16 +109,16 @@ const Account = () => {
       accountAction(AccountAction.configController, createdController, onModalClose, getController)
   );
 
-  const withdrawStep = createWithdrawSteps(async () => {
-    const res = await withdrawController();
-    onModalClose();
+  // const withdrawStep = createWithdrawSteps(async () => {
+  //   const res = await withdrawController();
+  //   onModalClose();
 
-    if (res.data.withdrawController) {
-      dispatchNotification(withdrawControllerSucceed(controller));
-    } else {
-      dispatchNotification(withdrawControllerFailed(controller));
-    }
-  });
+  //   if (res.data.withdrawController) {
+  //     dispatchNotification(withdrawControllerSucceed(controller));
+  //   } else {
+  //     dispatchNotification(withdrawControllerFailed(controller));
+  //   }
+  // });
 
   const updateMetadataStep = useMemo(
     () =>
@@ -146,7 +142,7 @@ const Account = () => {
   );
 
   const steps = useMemo(
-    () => ({ ...controllerSteps, ...withdrawStep, ...unregisterStep, ...updateMetadataStep }),
+    () => ({ ...controllerSteps, ...unregisterStep, ...updateMetadataStep }),
     [metadata, createdController]
   );
 
@@ -175,7 +171,6 @@ const Account = () => {
           visible={visible}
           title={AccountActionName[actionType]}
           onClose={onModalClose}
-          loading={loading}
           steps={steps[actionType]}
           currentStep={currentStep}
           type={actionType}
