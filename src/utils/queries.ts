@@ -69,9 +69,26 @@ export const STOP_PROJECT = gql`
   }
 `;
 
-export const UPDAET_CONTROLLER = gql`
-  mutation UpdateController {
-    updateController
+export const GET_CONTROLLERS = gql`
+  query {
+    controllers {
+      id
+      address
+    }
+  }
+`;
+
+export const ADD_CONTROLLER = gql`
+  mutation AddController {
+    addController
+  }
+`;
+
+export const REMOVE_CONTROLLER = gql`
+  mutation RemoveController($id: String!) {
+    removeController(id: $id) {
+      id
+    }
   }
 `;
 

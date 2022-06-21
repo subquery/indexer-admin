@@ -24,7 +24,7 @@ import { AccountAction } from 'pages/project-details/types';
 import { MetadataFormKey } from 'types/schemas';
 import { balanceSufficient } from 'utils/account';
 import { createIndexerMetadata } from 'utils/ipfs';
-import { REMOVE_ACCOUNTS, UPDAET_CONTROLLER, WITHDRAW_CONTROLLER } from 'utils/queries';
+import { ADD_CONTROLLER, REMOVE_ACCOUNTS, WITHDRAW_CONTROLLER } from 'utils/queries';
 
 import {
   AccountActionName,
@@ -39,7 +39,7 @@ import {
 import prompts, { notifications } from './prompts';
 import { Container } from './styles';
 
-const Registry = () => {
+const Account = () => {
   const [visible, setVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [createdController, setController] = useState('');
@@ -59,7 +59,7 @@ const Registry = () => {
   const { setPageLoading } = useLoading();
   const history = useHistory();
 
-  const [updateController] = useMutation(UPDAET_CONTROLLER);
+  const [updateController] = useMutation(ADD_CONTROLLER);
   const [removeAccounts] = useMutation(REMOVE_ACCOUNTS);
   const [withdrawController, { data, loading }] = useLazyQuery(WITHDRAW_CONTROLLER, {
     fetchPolicy: 'network-only',
@@ -185,4 +185,4 @@ const Registry = () => {
   );
 };
 
-export default Registry;
+export default Account;

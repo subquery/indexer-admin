@@ -58,6 +58,7 @@ export const createServiceButtonItems = (onButtonClick: (type: ProjectAction) =>
   ],
   [ProjectStatus.Terminated]: [
     createButtonItem('Restart Indexing', () => onButtonClick(ProjectAction.RestartProject)),
+    createButtonItem('Remove Project', () => onButtonClick(ProjectAction.RemoveProject)),
   ],
 });
 
