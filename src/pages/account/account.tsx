@@ -24,22 +24,21 @@ import { AccountAction } from 'pages/project-details/types';
 import { MetadataFormKey } from 'types/schemas';
 import { balanceSufficient } from 'utils/account';
 import { createIndexerMetadata } from 'utils/ipfs';
-import { ADD_CONTROLLER, REMOVE_ACCOUNTS } from 'utils/queries';
+import { REMOVE_ACCOUNTS } from 'utils/queries';
 
 import {
   AccountActionName,
   createButonItem,
-  createConfigControllerSteps,
   createUnregisterSteps,
   createUpdateMetadataSteps,
 } from './config';
 import prompts, { notifications } from './prompts';
 import { Container } from './styles';
+import { AccountButtonItem } from './types';
 
 const Account = () => {
   const [visible, setVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [createdController, setController] = useState('');
   const [actionType, setActionType] = useState<AccountAction>();
 
   const { account } = useWeb3();
@@ -49,18 +48,14 @@ const Account = () => {
   const accountAction = useAccountAction();
   const isMetaMask = useIsMetaMask();
   const isController = useIsController(account);
-  const { controller, getController } = useController();
+  const { controller } = useController();
   const controllerBalance = useBalance(controller);
   const indexerBalance = useBalance(account);
   const { dispatchNotification } = useNotification();
   const { setPageLoading } = useLoading();
   const history = useHistory();
 
-  const [updateController] = useMutation(ADD_CONTROLLER);
   const [removeAccounts] = useMutation(REMOVE_ACCOUNTS);
-  // const [withdrawController, { data, loading }] = useLazyQuery(WITHDRAW_CONTROLLER, {
-  //   fetchPolicy: 'network-only',
-  // });
 
   prompts.controller.desc = `Balance: ${controllerBalance} ACALA`;
   const controllerItem = !controller ? prompts.emptyController : prompts.controller;
@@ -76,7 +71,7 @@ const Account = () => {
     }
   }, [controllerBalance]);
 
-  const onButtonPress = (type: AccountAction) => {
+  const onButtonPress = (type?: AccountAction) => {
     setActionType(type);
     setVisible(true);
   };
@@ -94,31 +89,11 @@ const Account = () => {
   ];
 
   const controllerButtons = [
-    createButonItem(AccountAction.configController, () => history.push('/controller-management')),
+    {
+      title: 'Manange Controller',
+      onClick: () => history.push('/controller-management'),
+    } as AccountButtonItem,
   ];
-
-  const controllerSteps = createConfigControllerSteps(
-    createdController,
-    async () => {
-      const res = await updateController();
-      const createdAccount = res.data.updateController;
-      setController(createdAccount);
-      setCurrentStep(1);
-    },
-    () =>
-      accountAction(AccountAction.configController, createdController, onModalClose, getController)
-  );
-
-  // const withdrawStep = createWithdrawSteps(async () => {
-  //   const res = await withdrawController();
-  //   onModalClose();
-
-  //   if (res.data.withdrawController) {
-  //     dispatchNotification(withdrawControllerSucceed(controller));
-  //   } else {
-  //     dispatchNotification(withdrawControllerFailed(controller));
-  //   }
-  // });
 
   const updateMetadataStep = useMemo(
     () =>
@@ -141,10 +116,7 @@ const Account = () => {
     accountAction(AccountAction.unregister, '', onModalClose, unregisterCompleted)
   );
 
-  const steps = useMemo(
-    () => ({ ...controllerSteps, ...unregisterStep, ...updateMetadataStep }),
-    [metadata, createdController]
-  );
+  const steps = useMemo(() => ({ ...unregisterStep, ...updateMetadataStep }), [metadata]);
 
   return (
     <Container>

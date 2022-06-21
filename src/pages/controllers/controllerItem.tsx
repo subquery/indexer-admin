@@ -14,8 +14,9 @@ import { Controller } from './types';
 type Props = {
   name: string;
   controller: string | undefined;
-  onRemoveController: (id: string) => void;
-  onWithdraw: (id: string) => void;
+  onConfigController: (controller: Controller) => void;
+  onRemoveController: (controller: Controller) => void;
+  onWithdraw: (controller: Controller) => void;
 } & Controller;
 
 const ControllerItem: FC<Props> = ({
@@ -23,12 +24,11 @@ const ControllerItem: FC<Props> = ({
   name,
   controller,
   address,
+  onConfigController,
   onRemoveController,
   onWithdraw,
 }) => {
-  // FIXME: comparing with controller account
-  // const isActive = address === controller;
-  const isActived = address === '0xf610a648f386336609fb9f4a987fa49794b0fa21';
+  const isActived = address === controller;
   const balance = useBalance(address);
   const emptyBalance = Number(balance) === 0;
 
@@ -41,11 +41,13 @@ const ControllerItem: FC<Props> = ({
       <Balance>{asyncRender(!!balance, <Text>{`${balance} ACA`}</Text>)}</Balance>
       <Status>{isActived && <Tag text="Actived" state="success" />}</Status>
       <Buttons>
-        {!isActived && <Button title="Configure" onClick={() => console.log('')} />}
+        {!isActived && (
+          <Button title="Configure" onClick={() => onConfigController({ id, address })} />
+        )}
         {emptyBalance ? (
-          <Button ml={10} title="Remove" onClick={() => onRemoveController(id)} />
+          <Button ml={10} title="Remove" onClick={() => onRemoveController({ id, address })} />
         ) : (
-          <Button ml={10} title="Withdraw" onClick={() => onWithdraw(id)} />
+          <Button ml={10} title="Withdraw" onClick={() => onWithdraw({ id, address })} />
         )}
       </Buttons>
     </ItemContainer>

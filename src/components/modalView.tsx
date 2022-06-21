@@ -64,12 +64,12 @@ const modalStyles = {
 };
 
 type Props = {
-  steps: StepItem[] | undefined;
-  currentStep: number;
-  loading?: boolean;
-  type?: ModalAction;
   visible: boolean;
   title: string;
+  steps: StepItem[] | undefined;
+  currentStep?: number;
+  loading?: boolean;
+  type?: ModalAction;
   onClose: () => void;
 };
 
