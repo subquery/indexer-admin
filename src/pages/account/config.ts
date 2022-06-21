@@ -27,6 +27,7 @@ export const AccountActionName = {
   [AccountAction.unregister]: 'Unregister Indexer Account',
 };
 
+// TODO: refactor refer to `/controllers/config.ts`
 export const createUnregisterSteps = (onUnregister: ClickAction) => ({
   [AccountAction.unregister]: [
     {

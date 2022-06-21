@@ -93,8 +93,8 @@ export const REMOVE_CONTROLLER = gql`
 `;
 
 export const WITHDRAW_CONTROLLER = gql`
-  query WithdrawController {
-    withrawController
+  query WithdrawController($id: String!) {
+    withrawController(id: $id)
   }
 `;
 

@@ -65,8 +65,8 @@ const modalStyles = {
 
 type Props = {
   visible: boolean;
-  title: string;
   steps: StepItem[] | undefined;
+  title?: string;
   currentStep?: number;
   loading?: boolean;
   type?: ModalAction;
@@ -94,7 +94,7 @@ const ModalView: FC<Props> = ({
         {({ status, errors, submitForm, setFieldValue, initialValues }) => (
           <InputForm>
             <div>
-              {item.form?.items.map(({ title, formKey = '', placeholder = '', options }) => (
+              {item.form?.items.map(({ title = '', formKey = '', placeholder = '', options }) => (
                 <FieldItem
                   key={title}
                   title={title}

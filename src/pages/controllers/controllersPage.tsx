@@ -24,10 +24,12 @@ import {
   withdrawControllerSucceed,
 } from './config';
 import ControllerItem from './controllerItem';
+import { prompts } from './prompts';
 import { Container, ContentContainer, HeaderContainer } from './styles';
 import { Controller, ControllerAction } from './types';
 
 const controllersPage = () => {
+  const { header } = prompts;
   const [actionType, setActionType] = useState<ControllerAction>();
   const [account, setAccount] = useState<Controller>();
   const [visible, setVisible] = useState(false);
@@ -37,8 +39,8 @@ const controllersPage = () => {
   const { controller: currentController } = useController();
 
   const [removeController] = useMutation(REMOVE_CONTROLLER);
-  const [addController, { loading: addingController }] = useMutation(ADD_CONTROLLER);
-  const [withdrawController, { data, loading }] = useLazyQuery(WITHDRAW_CONTROLLER, {
+  const [addController, { loading: addControllerRequesting }] = useMutation(ADD_CONTROLLER);
+  const [withdrawController, { loading }] = useLazyQuery(WITHDRAW_CONTROLLER, {
     fetchPolicy: 'network-only',
   });
   const [getControllers, { data: controllers }] = useLazyQuery<{ controllers: Controller[] }>(
@@ -70,7 +72,7 @@ const controllersPage = () => {
   });
 
   const withdrawSteps = createWithdrawSteps(async () => {
-    const res = await withdrawController();
+    const res = await withdrawController({ variables: { id: account?.id } });
     onModalClose();
 
     if (res.data.withdrawController) {
@@ -98,20 +100,17 @@ const controllersPage = () => {
       <HeaderContainer>
         <ContentContainer>
           <Text size={30} fw="bold" mr={20}>
-            Manage Controller Account
+            {header.mainTitle}
           </Text>
           <Text color="gray" mt={5}>
-            Create and manange your controller accounts here
+            {header.title}
           </Text>
-          <Text color="gray">
-            You can Configure the account you wish to set as the controller on the coordinator
-            services
-          </Text>
+          <Text color="gray">{header.subTitle}</Text>
         </ContentContainer>
         <Button
-          title="Create Account"
+          title={header.button}
           type="primary"
-          loading={addingController}
+          loading={addControllerRequesting}
           onClick={addControllerAction}
         />
       </HeaderContainer>
@@ -132,7 +131,7 @@ const controllersPage = () => {
       {actionType && (
         <ModalView
           visible={visible}
-          title={ControllerAction[actionType]}
+          loading={loading}
           onClose={onModalClose}
           steps={steps[actionType]}
           type={actionType}
