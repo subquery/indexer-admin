@@ -8,6 +8,6 @@ export type Controller = {
 
 export enum ControllerAction {
   configController = 'configController',
-  withdraw = 'configController',
   removeAccount = 'removeAccount',
+  withdraw = 'widthdraw',
 }

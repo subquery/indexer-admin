@@ -9,7 +9,8 @@ export const Container = styled.div`
   flex: 1;
   flex-direction: column;
   min-width: 600px;
-  padding: 20px 100px;
+  padding: 30px 100px;
+  padding-bottom: 80px;
   overflow-y: scroll;
 `;
 
@@ -23,6 +24,16 @@ export const ContentContainer = styled.div<{ mt?: number }>`
   display: flex;
   flex-direction: column;
   margin-top: ${({ mt }) => mt ?? 0}px;
+`;
+
+export const IntroContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 80px;
 `;
 
 // controller items styles

@@ -28,9 +28,10 @@ const ControllerItem: FC<Props> = ({
   onRemoveController,
   onWithdraw,
 }) => {
-  const isActived = address === controller;
+  const isActived = address === controller?.toLocaleLowerCase();
   const balance = useBalance(address);
   const emptyBalance = Number(balance) === 0;
+  const account = { id, address };
 
   return (
     <ItemContainer>
@@ -41,13 +42,11 @@ const ControllerItem: FC<Props> = ({
       <Balance>{asyncRender(!!balance, <Text>{`${balance} ACA`}</Text>)}</Balance>
       <Status>{isActived && <Tag text="Actived" state="success" />}</Status>
       <Buttons>
-        {!isActived && (
-          <Button title="Configure" onClick={() => onConfigController({ id, address })} />
-        )}
+        {!isActived && <Button title="Configure" onClick={() => onConfigController(account)} />}
         {emptyBalance ? (
-          <Button ml={10} title="Remove" onClick={() => onRemoveController({ id, address })} />
+          <Button ml={10} title="Remove" onClick={() => onRemoveController(account)} />
         ) : (
-          <Button ml={10} title="Withdraw" onClick={() => onWithdraw({ id, address })} />
+          <Button ml={10} title="Withdraw" onClick={() => onWithdraw(account)} />
         )}
       </Buttons>
     </ItemContainer>

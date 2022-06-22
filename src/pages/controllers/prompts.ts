@@ -9,7 +9,12 @@ export const prompts = {
     title: 'Create and manange your controller accounts here',
     subTitle:
       'You can Configure the account you wish to set as the controller on the coordinator services',
-    button: 'Create Account',
+    button: 'Create an Account',
+  },
+  intro: {
+    title: 'Manage Controller Accounts',
+    desc: 'You can create as manay accounts as you want. You can then configure the one you wish to set as the controller on coordinator services.',
+    buttonTitle: 'Create an Account',
   },
   action: {
     configController: {
