@@ -38,8 +38,8 @@ const controllersPage = () => {
   const [visible, setVisible] = useState(false);
 
   const { dispatchNotification, removeNotification } = useNotification();
-  const accountAction = useAccountAction();
   const { controller: currentController, getController } = useController();
+  const accountAction = useAccountAction();
 
   const [removeController] = useMutation(REMOVE_CONTROLLER);
   const [addController, { loading: addControllerRequesting }] = useMutation(ADD_CONTROLLER);

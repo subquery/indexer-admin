@@ -12,6 +12,7 @@ export const Container = styled.div`
   padding: 30px 100px;
   padding-bottom: 80px;
   overflow-y: scroll;
+  min-width: 1200px;
 `;
 
 export const HeaderContainer = styled.div`
@@ -76,4 +77,5 @@ export const Buttons = styled.div`
   display: flex;
   flex: 3;
   justify-content: flex-end;
+  min-width: 300px;
 `;

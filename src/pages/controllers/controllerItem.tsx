@@ -9,6 +9,7 @@ import { asyncRender } from 'components/asyncRender';
 import { Button, Text } from 'components/primary';
 import { useBalance } from 'hooks/indexerHook';
 
+import { prompts } from './prompts';
 import { AccountContainer, Balance, Buttons, ItemContainer, Status } from './styles';
 import { Controller } from './types';
 
@@ -29,29 +30,32 @@ const ControllerItem: FC<Props> = ({
   onRemoveController,
   onWithdraw,
 }) => {
+  const { active, activeBtn, widthdrawBtn, removeBtn } = prompts.controllerItem;
   const isActived = address === controller?.toLocaleLowerCase();
   const balance = useBalance(address);
   const emptyBalance = Number(balance) === 0;
   const account = { id, address };
 
-  console.log('balance:', balance, 'controller:', controller);
-
   return (
     <ItemContainer>
       <AccountContainer>
-        <Text>{name}</Text>
-        <Text mt={5}>{address}</Text>
+        <Text size={20}>{name}</Text>
+        <Text size={16} color="gray" mt={5}>
+          {address}
+        </Text>
       </AccountContainer>
       <Balance>{asyncRender(!!balance, <Text>{`${balance} ACA`}</Text>)}</Balance>
-      <Status>{isActived && <Tag text="Actived" state="success" />}</Status>
+      <Status>{isActived && <Tag text={active} state="success" />}</Status>
       {asyncRender(
         !isUndefined(controller) && !isUndefined(balance),
         <Buttons>
-          {!isActived && <Button title="Configure" onClick={() => onConfigController(account)} />}
+          {!isActived && <Button title={activeBtn} onClick={() => onConfigController(account)} />}
           {!isActived && emptyBalance && (
-            <Button ml={10} title="Remove" onClick={() => onRemoveController(account)} />
+            <Button ml={10} title={removeBtn} onClick={() => onRemoveController(account)} />
           )}
-          {!emptyBalance && <Button ml={10} title="Withdraw" onClick={() => onWithdraw(account)} />}
+          {!emptyBalance && (
+            <Button ml={10} title={widthdrawBtn} onClick={() => onWithdraw(account)} />
+          )}
         </Buttons>
       )}
     </ItemContainer>
