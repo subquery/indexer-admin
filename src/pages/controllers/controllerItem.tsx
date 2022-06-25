@@ -6,11 +6,20 @@ import { Tag } from '@subql/react-ui';
 import { isUndefined } from 'lodash';
 
 import { asyncRender } from 'components/asyncRender';
+import Avatar from 'components/avatar';
 import { Button, Text } from 'components/primary';
 import { useBalance } from 'hooks/indexerHook';
+import { openAccountExporer } from 'utils/account';
 
 import { prompts } from './prompts';
-import { AccountContainer, Balance, Buttons, ItemContainer, Status } from './styles';
+import {
+  AccountContainer,
+  Balance,
+  Buttons,
+  ItemContainer,
+  ItemContentContainer,
+  Status,
+} from './styles';
 import { Controller } from './types';
 
 type Props = {
@@ -38,14 +47,19 @@ const ControllerItem: FC<Props> = ({
 
   return (
     <ItemContainer>
-      <AccountContainer>
-        <Text size={20}>{name}</Text>
-        <Text size={16} color="gray" mt={5}>
-          {address}
-        </Text>
-      </AccountContainer>
-      <Balance>{asyncRender(!!balance, <Text>{`${balance} ACA`}</Text>)}</Balance>
-      <Status>{isActived && <Tag text={active} state="success" />}</Status>
+      <ItemContentContainer onClick={() => openAccountExporer(address)}>
+        <Avatar address={address} size={70} />
+        <AccountContainer>
+          <Text size={18} fw="600">
+            {name}
+          </Text>
+          <Text size={15} color="gray" mt={5}>
+            {address}
+          </Text>
+        </AccountContainer>
+        <Balance>{asyncRender(!!balance, <Text>{`${balance} ACA`}</Text>)}</Balance>
+        <Status>{isActived && <Tag text={active} state="success" />}</Status>
+      </ItemContentContainer>
       {asyncRender(
         !isUndefined(controller) && !isUndefined(balance),
         <Buttons>
