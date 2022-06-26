@@ -2959,10 +2959,10 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@subql/contract-sdk@0.6.1-2":
-  version "0.6.1-2"
-  resolved "https://registry.yarnpkg.com/@subql/contract-sdk/-/contract-sdk-0.6.1-2.tgz#75f46c780ec778081c74f99f95a55836b3d62515"
-  integrity sha512-TBS0pb+HoXz4yLXClBD2a4x0HcOcbmpkc1ZcbAm0VMnWZQq6ov7WcZ/JecdZdsY7Xt8w7OKKINPKcckOPkHddg==
+"@subql/contract-sdk@0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@subql/contract-sdk/-/contract-sdk-0.7.0.tgz#548dc641421b67852807b42225497a42c5fccb26"
+  integrity sha512-dRfvIF0pJNzco31Y1rFkG+NkU5yY/A52OKIPYJNJ8u3niWcS8lwwTfwOEZ1GOVHiBgbOLqEbyKPoUAr2QlB8uQ==
   dependencies:
     "@openzeppelin/contracts-upgradeable" "^4.5.2"
 
